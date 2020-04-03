@@ -140,17 +140,24 @@ class stones:
                 count = count + 1
 
 ########################################################################################################################
-    def _EatGroups(self,location,turn):
+    def _EatGroups(self, location, turn):
         Eat = False
-        for group in self._LGroups[1-turn]:
-            if len(group) == 1 and group == [location]:
-                print("Eat Group")
-                removedGroup = self._LGroups[1-turn].index([location])
-                self._CapturedStones[turn] = self._CapturedStones[turn] + len(self._Groups[1-turn][removedGroup])
-                self._UpdateEmpty(location,self._Groups[1-turn][removedGroup][:])
-                self._LGroups[1-turn].remove([location])
-                self._Groups[1-turn].pop(removedGroup)
-                Eat = True
+        for group in self._LGroups[1 - turn]:
+            if location in group:
+                if len(group) == 1:
+                    print("Eat Group")
+                    removedGroup = self._LGroups[1 - turn].index([location])
+                    self._CapturedStones[turn] = self._CapturedStones[turn] + len(self._Groups[1 - turn][removedGroup])
+                    self._UpdateEmpty(location, self._Groups[1 - turn][removedGroup][:])
+                    self._LGroups[1 - turn].remove([location])
+                    self._Groups[1 - turn].pop(removedGroup)
+                    Eat = True
+                else:
+                    self._UpdateEmpty(location)
+                    affectedGroup = self._LGroups[1 - turn].index(group)
+                    self._LGroups[1 - turn][affectedGroup].remove(location)
+                    Eat = False
+
         return Eat
 ########################################################################################################################
     def _UpdateMyGroups(self,location,turn):
@@ -246,6 +253,7 @@ class stones:
                 Terr[state-1] = Terr[state-1] + count
         return Terr
 ########################################################################################################################
-A = stones([(1, 0), (2, 1), (0, 1), (2, 2),(1, 3),(0,2),(18,16),(17,16),(16,18),(16,17)], [ (2, 3),(1,2)])
+A = stones([(1, 0), (2, 1), (0, 1), (2, 2),(1, 3),(18,16),(17,16),(16,18),(16,17)], [ (2, 3),(1,2)])
 A.AddStone((1,1),0)
+A.AddStone((0,2),0)
 print(A.Score())
