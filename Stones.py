@@ -1,7 +1,6 @@
 import numpy as np
 from enum import IntEnum
 
-
 class Position(IntEnum):
     black = -1
     empty = 0
@@ -22,6 +21,10 @@ class stones:
     _Groups = [_Wgroup, _Bgroup, _Egroup]
     _LGroups = [_LWgroup, _LBgroup]
     _CapturedStones = [0, 0]
+    _FutureBoardState = []
+    _WPreviousBoardStates = []
+    _BPreviousBoardStates = []
+    _PreviousBoardStates = [_WPreviousBoardStates, _BPreviousBoardStates]
 
     ########################################################################################################################
     def __init__(self, wloc=[], bloc=[]):
@@ -46,24 +49,40 @@ class stones:
 
     ########################################################################################################################
 
-    def AddStone(self, location, turn):
-        if location[0] < 0 or location[1] < 0 or self._board[location[0]][location[1]] != Position.empty:
+    def AddStone(self, glocation, turn):
+        location = (int(glocation[0]),int(glocation[1]))
+        print(location)
+        if location[0] < 0 or location[1] < 0  or location[0] > 18 or location[1] > 18 or self._board[location[0]][location[1]] != Position.empty:
             print("Invalid Location")
             return False
-        self._board[location[0]][location[1]] = turn
-        if self._EatGroups(location, turn):
-            self._UpdateGroups(location, turn)
+
+        if turn == 1:
+            color = Position.black
+        else:
+            color = Position.white
+
+        self._FutureBoardState = self._board[:]
+        self._FutureBoardState [location[0]][location[1]] = color
+
+        if  not self._CheckState(self._FutureBoardState,self._PreviousBoardStates[turn]):
+            print("Super KO")
+            return False
+        self._PreviousBoardStates[turn].append(np.copy(self._FutureBoardState))
+
+        if self._EatGroups(location, turn,color):
+            print("Eat Group")
+            self._UpdateGroups(location, turn,color)
 
         elif self._SuicideMove(location,turn):
             print("Suicide Move")
-            print(self._LWgroup)
             return True
         else:
-            self._UpdateGroups(location, turn)
+            self._UpdateGroups(location, turn,color)
             self._UpdateEmpty(location)
+            self._UpdateBoard(location,color)
 
-        self._UpdateBoard()
         print(self._board)
+        return True
 
     ########################################################################################################################
     def _CreateGroups(self, locations, Group):
@@ -124,12 +143,12 @@ class stones:
                 count = count + 1
 
     ########################################################################################################################
-    def _EatGroups(self, location, turn):
+    def _EatGroups(self, location, turn,color):
         Eat = False
         for group in self._LGroups[1 - turn]:
             if location in group and len(group) == 1:
-                print("Eat Group")
                 removedGroup = self._LGroups[1 - turn].index([location])
+                self._UpdateBoard(location, color,self._Groups[1 - turn][removedGroup])
                 self._CapturedStones[turn] = self._CapturedStones[turn] + len(self._Groups[1 - turn][removedGroup])
                 self._UpdateEmpty(location, self._Groups[1 - turn][removedGroup][:])
                 self._LGroups[1 - turn].remove([location])
@@ -139,7 +158,7 @@ class stones:
         return Eat
 
     ########################################################################################################################
-    def _UpdateGroups(self, location, turn):
+    def _UpdateGroups(self, location, turn,color):
         loc = []
         for group in self._LGroups[turn]:
             if location in group:
@@ -165,7 +184,8 @@ class stones:
                       (location[0], location[1] - 1)]:
                 if x[0] < 0 or x[1] < 0 or x[0] > 18 or x[1] > 18:
                     continue
-                NewLib.append((x[0], x[1]))
+                if self._board[x[0]][x[1]] == color or self._board[x[0]][x[1]] == Position.empty:
+                    NewLib.append((x[0], x[1]))
         self._LGroups[turn].append(NewLib)
         self._Groups[turn].append(NewGroup)
 
@@ -189,15 +209,18 @@ class stones:
         self._Egroup = self._CreateGroups(temp, "e")
 
     ########################################################################################################################
-    def _UpdateBoard(self):
-        self._board = np.zeros((19, 19), dtype=int)
-        for group in self._Bgroup:
-            for location in group:
-                self._board[location[0]][location[1]] = -1
-        for group in self._Wgroup:
-            for location in group:
-                self._board[location[0]][location[1]] = 1
+    def _UpdateBoard(self,AddedLocation,color,RemovedLocations=[]):
+        self._board[AddedLocation[0]][AddedLocation[1]] = color
+        for location in RemovedLocations:
+            self._board[location[0]][location[1]] = 0
 
+    ########################################################################################################################
+    def _CheckState(self,FutureState,PrevStates):
+        #TODO Implement using parrallel for loop
+        for i in range(len(PrevStates)):
+            if np.array_equal(PrevStates[i], FutureState):
+                return False
+        return True
     ########################################################################################################################
     def Score(self):
         territory = self._CalcTerr()
@@ -232,7 +255,7 @@ class stones:
                     elif self._board[x[0]][x[1]] != 0:
                         state = 0
 
-            if state != 0:
+            if state > 0:
                 Terr[state - 1] = Terr[state - 1] + count
         return Terr
 
@@ -251,11 +274,11 @@ class stones:
                   (location[0], location[1] - 1)]:
             if x[0] < 0 or x[1] < 0 or x[0] > 18 or x[1] > 18:
                 continue
-            if self._board[x[0]][x[1]] == a:
+            if self._board[x[0]][x[1]] == a or self._board[x[0]][x[1]] == Position.empty:
                 Suicide = False
                 break
         if not Suicide:
-            for group in self._LGroups[turn]:
+            for group in self._LGroups[1-turn]:
                 if len(group) == 1 and group == [location]:
                     return True
 
@@ -266,6 +289,13 @@ class stones:
 #A = stones([(1, 0), (2, 1), (0, 1), (2, 2), (1, 3), (18, 16), (17, 16), (16, 18), (16, 17)], [(2, 3), (1, 2)])
 #A.AddStone((1, 1), 0)
 #A.AddStone((0, 2), 0)
-A = stones([(1, 0), (2, 1), (0, 1), (1, 2)])
-A.AddStone((1, 1), 1)
-print(A.Score())
+#A = stones([(1, 0), (2, 1), (0, 1)],[(0,2),(1,3),(2,2),(1,1)])
+#print()
+#A.AddStone((1, 2), 0)
+#x = input();
+#print()
+#A.AddStone((1, 1), 1)
+#print()
+#A.AddStone((1, 2), 0)
+#print()
+#print(A.Score())
