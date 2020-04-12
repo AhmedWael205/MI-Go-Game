@@ -25,6 +25,9 @@ class stones:
     _WPreviousBoardStates = []
     _BPreviousBoardStates = []
     _PreviousBoardStates = [_WPreviousBoardStates, _BPreviousBoardStates]
+    _BlackTerr = []
+    _WhiteTerr = []
+    _TerrGroups = [_WhiteTerr,_BlackTerr]
 
     ########################################################################################################################
     def __init__(self, wloc=[], bloc=[]):
@@ -81,7 +84,6 @@ class stones:
             self._UpdateEmpty(location)
             self._UpdateBoard(location,color)
 
-        print(self._board)
         return True
 
     ########################################################################################################################
@@ -222,7 +224,7 @@ class stones:
                 return False
         return True
     ########################################################################################################################
-    def Score(self):
+    def getScoreAndTerrBoard(self):
         territory = self._CalcTerr()
         count = 6.5 + self._CapturedStones[0]
         for group in self._Wgroup:
@@ -233,11 +235,13 @@ class stones:
         for group in self._Bgroup:
             count = count + len(group)
         territory[1] = territory[1] + count
-        return territory
+        TerrBoard = self._getTerr()
+        return territory,TerrBoard
 
     ########################################################################################################################
     def _CalcTerr(self):
         Terr = [0, 0]
+        self._TerrGroups = [[],[]]
         for group in self._Egroup:
             state = -1  # 0: all 2:black 1: white
             count = 0
@@ -257,6 +261,8 @@ class stones:
 
             if state > 0:
                 Terr[state - 1] = Terr[state - 1] + count
+                for x,y in group:
+                    self._TerrGroups [state - 1].append((x,y))
         return Terr
 
 
@@ -284,6 +290,20 @@ class stones:
 
 
         return Suicide
+
+########################################################################################################################
+    def getBoard(self):
+        return self._board
+
+    def _getTerr(self):
+        Terrboard = np.zeros((19, 19), dtype=int)
+        for x,y in self._TerrGroups[0]:
+            Terrboard[x][y] = 1
+        for x,y in self._TerrGroups[1]:
+            Terrboard[x][y] = -1
+        return Terrboard
+
+
 
 ########################################################################################################################
 #A = stones([(1, 0), (2, 1), (0, 1), (2, 2), (1, 3), (18, 16), (17, 16), (16, 18), (16, 17)], [(2, 3), (1, 2)])
