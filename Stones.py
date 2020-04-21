@@ -78,7 +78,7 @@ class stones:
 
         elif self._SuicideMove(location,turn):
             print("Suicide Move")
-            return True
+            return False
         else:
             self._UpdateGroups(location, turn,color)
             self._UpdateEmpty(location)
@@ -169,6 +169,13 @@ class stones:
         NewLib = []
         NewGroup = [location]
 
+        for x in [(location[0] + 1, location[1]), (location[0] - 1, location[1]), (location[0], location[1] + 1),
+                  (location[0], location[1] - 1)]:
+            if x[0] < 0 or x[1] < 0 or x[0] > 18 or x[1] > 18:
+                continue
+            if self._board[x[0]][x[1]] == Position.empty:
+                NewLib.append((x[0], x[1]))
+
         for w in loc:
             for i, j in self._LGroups[turn][w]:
                 if (i, j) not in NewLib:
@@ -181,13 +188,7 @@ class stones:
             self._LGroups[turn].pop(w - count)
             self._Groups[turn].pop(w - count)
             count = count + 1
-        if len(NewLib) == 0:
-            for x in [(location[0] + 1, location[1]), (location[0] - 1, location[1]), (location[0], location[1] + 1),
-                      (location[0], location[1] - 1)]:
-                if x[0] < 0 or x[1] < 0 or x[0] > 18 or x[1] > 18:
-                    continue
-                if self._board[x[0]][x[1]] == color or self._board[x[0]][x[1]] == Position.empty:
-                    NewLib.append((x[0], x[1]))
+
         self._LGroups[turn].append(NewLib)
         self._Groups[turn].append(NewGroup)
 
