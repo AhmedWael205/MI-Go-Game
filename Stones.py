@@ -154,7 +154,7 @@ class stones:
                 self._CapturedStones[turn] = self._CapturedStones[turn] + len(self._Groups[1 - turn][removedGroup])
                 self._UpdateEmpty(location, self._Groups[1 - turn][removedGroup][:])
                 self._LGroups[1 - turn].remove([location])
-                self._Groups[1 - turn].pop(removedGroup)
+                del self._Groups[1 - turn][removedGroup]
                 Eat = True
 
         return Eat
@@ -219,11 +219,7 @@ class stones:
 
     ########################################################################################################################
     def _CheckState(self,FutureState,PrevStates):
-        #TODO Implement using parrallel for loop
-        for i in range(len(PrevStates)):
-            if np.array_equal(PrevStates[i], FutureState):
-                return False
-        return True
+        return not any(np.array_equal(FutureState, state) for state in PrevStates)
     ########################################################################################################################
     def getScoreAndTerrBoard(self):
         territory = self._CalcTerr()
