@@ -83,8 +83,8 @@ class GameManager:
         self.winner = int(score[0] > score[1])
         self.winner -= int(score[1] < score[0])
 
-    def MakeMove(self):
-        return GameManager(self.game, self.turn, self.move, False, self.previousMove)
+    def MakeMove(self, action):
+        return GameManager(self.game, self.turn, action, False, self.previousMove)
 
     def SimulateMove(self, action):
         return GameManager(self.game, self.turn, action, True, self.move)
@@ -105,3 +105,6 @@ class GameManager:
 
         truthOfMoves[:-1] = np.asarray(buffer)
         return np.where(truthOfMoves)
+
+    def SetID(self, id):
+        self.id=id
