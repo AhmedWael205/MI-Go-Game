@@ -12,6 +12,8 @@ class GameState:
     Board = []
     Pass = [False, False]
     _Game = stones([],[])
+
+
     def __init__(self, Paramters = False, Turn = None,CurrState = None,Board = None,PrevGameState = None):
         GameState.ID += 1
         if not Paramters:
@@ -48,28 +50,7 @@ class GameState:
         AllowedActions.append(361) # 361 = pass
         return AllowedActions
 
-    def simulateaction(self,action):
-        TryGame = copy(self._Game)
-        i = action // 19
-        j = action % 19
-        TryGame.AddStone((str(i),str(j)), self.Turn)
-        newGameState = copy(self)
-        newGameState.Board = TryGame.getBoard()
-        newGameState.ID = self.ID + 1
 
-        newGameState.WhiteBoards.pop(7)
-        newGameState.BlackBoards.pop(7)
-
-        newGameState.WhiteBoards.insert(0, np.zeros((19, 19), dtype=int))
-        newGameState.BlackBoards.insert(0, np.zeros((19, 19), dtype=int))
-
-        for i in range(19):
-            for j in range(19):
-                if newGameState.Board[i][j] == 1:
-                    newGameState.WhiteBoards[0][i][j] = 1
-                elif newGameState.Board[i][j] == -1:
-                    newGameState.BlackBoards[0][i][j] = 1
-        return newGameState
 
     def makeMove(self,action):
         i = action // 19
@@ -89,10 +70,11 @@ class GameState:
             return newGameState
 
         else:
-            self.Pass[self.Turn] = False
-            self._Game.AddStone((str(i), str(j)), self.Turn)
-            self.Turn = 1 - self.Turn
+
             newGameState = copy(self)
+            newGameState.Pass[self.Turn] = False
+            newGameState._Game.AddStone((str(i), str(j)), self.Turn)
+            newGameState.Turn = 1 - self.Turn
             newGameState.Board = self._Game.getBoard()
 
             newGameState.ID = self.ID + 1
