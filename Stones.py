@@ -31,6 +31,22 @@ class stones:
 
     ########################################################################################################################
     def __init__(self, wloc=[], bloc=[]):
+        self._Wgroup = []
+        self._LWgroup = []
+        self._Bgroup = []
+        self._LBgroup = []
+        self._Egroup = [[(i, j) for i in range(19) for j in range(19)]]
+        self._Groups = [self._Wgroup, self._Bgroup, self._Egroup]
+        self._LGroups = [self._LWgroup, self._LBgroup]
+        self._CapturedStones = [0, 0]
+        self._FutureBoardState = []
+        self._WPreviousBoardStates = []
+        self._BPreviousBoardStates = []
+        self._PreviousBoardStates = [self._WPreviousBoardStates, self._BPreviousBoardStates]
+        self._BlackTerr = []
+        self._WhiteTerr = []
+        self._TerrGroups = [self._WhiteTerr, self._BlackTerr]
+
         self._board = np.zeros((19, 19), dtype=int)
         if len(wloc) != 0:
             for location in wloc:
@@ -48,6 +64,7 @@ class stones:
 
         self._CreateLibs()
         self._LGroups = [self._LWgroup, self._LBgroup]
+
         # print(self._LGroups)
 
     ########################################################################################################################

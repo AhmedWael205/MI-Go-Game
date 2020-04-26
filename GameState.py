@@ -53,12 +53,22 @@ class GameState:
 
 
     def makeMove(self,action):
-        i = action // 19
-        j = action % 19
+        m = action // 19
+        n = action % 19
+
+        newGameState = copy(self)
+        wloc = []
+        bloc = []
+        for i in range(19):
+            for j in range(19):
+                if self.Board[i][j] == 1:
+                    wloc.append((i, j))
+                elif self.Board[i][j] == -1:
+                    bloc.append((i, j))
+        newGameState._Game = stones(wloc, bloc)
 
         if action == 361:
-            newGameState = copy(self)
-            newGameState.ID = self.ID + 1
+            GameState.ID += 1
             newGameState.Pass[self.Turn] = True
             newGameState.Turn = 1 - self.Turn
             if False not in self.Pass:
@@ -70,27 +80,24 @@ class GameState:
             return newGameState
 
         else:
-
-            newGameState = copy(self)
             newGameState.Pass[self.Turn] = False
-            newGameState._Game.AddStone((str(i), str(j)), self.Turn)
+            newGameState._Game.AddStone((str(m), str(n)), self.Turn)
             newGameState.Turn = 1 - self.Turn
-            newGameState.Board = self._Game.getBoard()
+            newGameState.Board = newGameState._Game.getBoard()
 
-            newGameState.ID = self.ID + 1
+            GameState.ID += 1
             newGameState.WhiteBoards.pop(7)
             newGameState.BlackBoards.pop(7)
 
-            newGameState.WhiteBoards.insert(0, np.zeros((19, 19), dtype=int))
-            newGameState.BlackBoards.insert(0, np.zeros((19, 19), dtype=int))
+            newGameState.WhiteBoards.insert(0, np.copy(newGameState.WhiteBoards[1]))
+            newGameState.BlackBoards.insert(0, np.copy(newGameState.BlackBoards[1]))
 
-            for i in range(19):
-                for j in range(19):
-                    if newGameState.Board[i][j] == 1:
-                        newGameState.WhiteBoards[0][i][j] = 1
-                    elif newGameState.Board[i][j] == -1:
-                        newGameState.BlackBoards[0][i][j] = 1
+            if self.Turn == 0:
+                newGameState.WhiteBoards[0][m][n] = 1
+            else:
+                newGameState.BlackBoards[0][m][n] = 1
             return newGameState
 
 Game = GameState()
-print(Game.makeMove(1).makeMove(361).makeMove(19).makeMove(361).makeMove(361).State)
+print(Game.makeMove(1).makeMove(361).BlackBoards[0])
+print(Game.getAllowedAction())
