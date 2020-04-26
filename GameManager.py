@@ -2,6 +2,25 @@ import numpy as np
 from Stones import stones
 import copy
 
+"""
+
+data members:
+    game: an instance of stones holding the current game
+    id: a unique id for each game state
+    previousMove: the last move made by the other player
+    move: the move to be made by the manager 
+    turn: the player that will make the suggested move
+    prevWhites: the last 8 boards from white's perspective in the format agreed on
+    prevBlacks: the last 8 boards from blacks's perspective in the format agreed on
+    isEnded: a flag indicating whether the suggested move ends the game
+    winner: integer indicating the current winner (-1 black, 1 white, 0 tie)
+    
+member functions:
+    MakeMove: called from the object that you simulated this move from and you want to make
+    SimulateMove: takes the move to be simulated and tries it without changing the game
+    GetPossibleMoves: return an array of positions you can play in (vector format not matrix)
+    
+"""
 
 def AdjustBoardPrespective(matrixboard: np.ndarray, colour):
     board = matrixboard.reshape(361)
