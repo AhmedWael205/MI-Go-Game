@@ -30,7 +30,7 @@ class stones:
     _TerrGroups = [_WhiteTerr,_BlackTerr]
 
     ########################################################################################################################
-    def __init__(self, wloc=[], bloc=[]):
+    def __init__(self,bCapturedStones=0,wCapturedStones=0 ,wloc=[], bloc=[]):
         self._Wgroup = []
         self._LWgroup = []
         self._Bgroup = []
@@ -38,7 +38,7 @@ class stones:
         self._Egroup = [[(i, j) for i in range(19) for j in range(19)]]
         self._Groups = [self._Wgroup, self._Bgroup, self._Egroup]
         self._LGroups = [self._LWgroup, self._LBgroup]
-        self._CapturedStones = [0, 0]
+        self._CapturedStones = [bCapturedStones, wCapturedStones]
         self._FutureBoardState = []
         self._WPreviousBoardStates = []
         self._BPreviousBoardStates = []
