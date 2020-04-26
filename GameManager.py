@@ -19,6 +19,7 @@ member functions:
     MakeMove: called from the object that you simulated this move from and you want to make
     SimulateMove: takes the move to be simulated and tries it without changing the game
     GetPossibleMoves: return an array of positions you can play in (vector format not matrix)
+    SetID: seriously? :')
     
 """
 
@@ -83,8 +84,11 @@ class GameManager:
         self.winner = int(score[0] > score[1])
         self.winner -= int(score[1] < score[0])
 
-    def MakeMove(self, action):
-        return GameManager(self.game, self.turn, action, False, self.previousMove)
+    def MakeMove(self, action, id):
+        gm=GameManager(self.game, self.turn, action, False, self.previousMove)
+        gm.SetID(id)
+        GameManager.statesCount-=1
+        return gm
 
     def SimulateMove(self, action):
         return GameManager(self.game, self.turn, action, True, self.move)
