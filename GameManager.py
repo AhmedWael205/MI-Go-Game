@@ -12,7 +12,7 @@ def AdjustBoardPrespective(matrixboard: np.ndarray, colour):
 class GameManager:
     statesCount = 0
 
-    def __init__(self, prevGame: stones = None, actor=0, action=361, simulate=True):
+    def __init__(self, prevGame: stones = None, actor=0, action=361, simulate=True, prevMove=-1):
 
         self.id = GameManager.statesCount
         GameManager.statesCount += 1
@@ -24,7 +24,7 @@ class GameManager:
             self.game = copy.deepcopy(prevGame)
         else:
             self.game = prevGame
-
+        self.previousMove = prevMove
         self.move = action
         if action != 361:
             position = (action // 19, action % 19)
@@ -54,13 +54,35 @@ class GameManager:
                 self.prevBlacks[:, i] = AdjustBoardPrespective(
                     self.game._PreviousBoardStates[int((1 - self.turn) == 1)][-i], -1)
 
-        truthOfMoves = np.zeros(362,dtype=bool)
-        truthOfMoves[-1]=True
-        dummy=copy.deepcopy(prevGame)
-        truthOfMoves[:-1]=np.asarray([dummy.AddStone((i,j), int(actor == 1)) for i in range(19) for j in range(19)])
-        self.possibleMoves=np.where(truthOfMoves)
+        score = self.game.getScoreAndTerrBoard()[0]
+
+        noMoreMoves = len(self.GetPossibleMoves(True)) + len(self.GetPossibleMoves(False)) == 0
+        doublepass = action == 361 and self.previousMove == 361
+
+        self.isEnded = noMoreMoves or doublepass
+
+        self.winner = int(score[0] > score[1])
+        self.winner -= int(score[1] < score[0])
 
     def MakeMove(self):
-        return GameManager(self.game, self.turn, self.move, False)
+        return GameManager(self.game, self.turn, self.move, False, self.previousMove)
 
+    def SimulateMove(self, action):
+        return GameManager(self.game, self.turn, action, True, self.move)
 
+    def GetPossibleMoves(self, forMe):
+        if forMe:
+            actor = self.turn
+        else:
+            actor = -self.turn
+
+        truthOfMoves = np.zeros(362, dtype=bool)
+        truthOfMoves[-1] = True
+        buffer = []
+        for i in range(19):
+            for j in range(19):
+                dummy = copy.deepcopy(self.game.getBoard())
+                buffer.append(dummy.AddStone((i, j), int(actor == 1)))
+
+        truthOfMoves[:-1] = np.asarray(buffer)
+        return np.where(truthOfMoves)
