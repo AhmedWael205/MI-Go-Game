@@ -43,7 +43,7 @@ class stones:
             self._CreateGroups(bloc, "b")
         self._Egroup = self._CreateGroups(self._Egroup[0][:], "e")
         self._Groups = [self._Wgroup, self._Bgroup, self._Egroup]
-        print(self._board)
+        # print(self._board)
         # print(self._Groups)
 
         self._CreateLibs()
@@ -54,7 +54,7 @@ class stones:
 
     def AddStone(self, glocation, turn):
         location = (int(glocation[0]),int(glocation[1]))
-        print(location)
+        # print(location)
         if location[0] < 0 or location[1] < 0  or location[0] > 18 or location[1] > 18 or self._board[location[0]][location[1]] != Position.empty:
             print("Invalid Location")
             return False
@@ -64,13 +64,14 @@ class stones:
         else:
             color = Position.white
 
-        self._FutureBoardState = self._board[:]
+        self._FutureBoardState = np.copy(self._board)
         self._FutureBoardState [location[0]][location[1]] = color
+
 
         if  not self._CheckState(self._FutureBoardState,self._PreviousBoardStates[turn]):
             print("Super KO")
             return False
-        self._PreviousBoardStates[turn].append(np.copy(self._FutureBoardState))
+
 
         if self._EatGroups(location, turn,color):
             print("Eat Group")
@@ -84,6 +85,7 @@ class stones:
             self._UpdateEmpty(location)
             self._UpdateBoard(location,color)
 
+        self._PreviousBoardStates[turn].append(np.copy(self._FutureBoardState))
         return True
 
     ########################################################################################################################
@@ -303,16 +305,29 @@ class stones:
 
 
 ########################################################################################################################
-#A = stones([(1, 0), (2, 1), (0, 1), (2, 2), (1, 3), (18, 16), (17, 16), (16, 18), (16, 17)], [(2, 3), (1, 2)])
-#A.AddStone((1, 1), 0)
-#A.AddStone((0, 2), 0)
-#A = stones([(1, 0), (2, 1), (0, 1)],[(0,2),(1,3),(2,2),(1,1)])
-#print()
-#A.AddStone((1, 2), 0)
-#x = input();
-#print()
-#A.AddStone((1, 1), 1)
-#print()
-#A.AddStone((1, 2), 0)
-#print()
-#print(A.Score())
+    def tryAction(self,location,turn):
+        if turn == 1:
+            color = Position.black
+        else:
+            color = Position.white
+
+        FutureBoardState = np.copy(self._board)
+        FutureBoardState[location[0]][location[1]] = color
+
+        if not self._CheckState(FutureBoardState, self._PreviousBoardStates[turn]):
+            return False
+
+        if self._TryEatGroups(location, turn, color):
+            return True
+        elif self._SuicideMove(location, turn):
+            return False
+        return True
+
+
+    def _TryEatGroups(self, location, turn,color):
+        for group in self._LGroups[1 - turn]:
+            if location in group and len(group) == 1:
+                return True
+        return False
+
+########################################################################################################################

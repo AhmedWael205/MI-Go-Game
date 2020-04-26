@@ -3,7 +3,7 @@ import unittest
 
 from Go import go
 
-class GoTestCase(unittest.TestCase):
+class GoTestCase1(unittest.TestCase):
 
     def test_go_White_Resign(self):
         user_input = [
@@ -53,7 +53,8 @@ class GoTestCase4(unittest.TestCase):
             '1',                # White Pass
             '2', '0', '1',
             '2', '0', '0',      # White Try Suicide should fail and plays again
-            '2', '2',           # White plays again
+            '0', '0',           # White plays again
+            '2', '2',
             '1',
             '1'
         ]
