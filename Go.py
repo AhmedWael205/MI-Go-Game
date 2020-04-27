@@ -66,7 +66,7 @@ context = zmq.Context()
 
 # A SEND CHANNEL FOR GUI
 sendSocket = context.socket(zmq.REP)
-sendSocket.bind("tcp://*:5555")
+sendSocket.bind("tcp://*:2222")
 
 # A RECEIVE CHANNEL FRO, GUI
 receiveSocket = context.socket(zmq.REQ)
