@@ -15,7 +15,7 @@ class Turn(IntEnum):
 class stones:
 
     ########################################################################################################################
-    def __init__(self, wloc=[], bloc=[]):
+    def __init__(self, wloc=[], bloc=[],bCapturedStones=0,wCapturedStones=0):
         self._Wgroup = []
         self._LWgroup = []
         self._Bgroup = []
