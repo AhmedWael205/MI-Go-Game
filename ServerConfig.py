@@ -54,6 +54,8 @@ for move in moveLogJsonArr:
         print("Error in parsing JSON FILE AT GAME INIT CONFIG")
     turn = 1 - turn
 
+score, TerrBoard = backEndGame.getScoreAndTerrBoard()
+print(score)
 """"
 NOW instance backEnd stage is initialized with the data parsed
 """
