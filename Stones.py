@@ -347,15 +347,17 @@ class stones:
                         if x in group and location not in self._LGroups[turn][w]:
                             self._LGroups[turn][w].append(location)
 
-    def Drawboard(self):
+    def Drawboard(self,Board = []):
+        if len(Board) == 0:
+            Board = self._board
         print ("N\t0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18\t")
         for i in range (19):
             print(i, end="\t")
             for j in range (19):
-                if self._board[i][j] == 1:
+                if Board[i][j] == 1:
                     print(u"\u2588", end="  ")
-                elif self._board[i][j] == -1:
-                    print("B", end="  ")
+                elif Board[i][j] == -1:
+                    print("▒", end="  ")
                 else:
                     print(".", end="  ")
             print()

@@ -12,7 +12,7 @@ def go():
     score = [6.5, 0]
     Board = stones(InitialWhiteLocations, InitialBlackLocations)
     Resign = False
-
+    print("White Stone = █\nBlack Stone = ▒\nEmpty = .\n")
     while False in Pass:
         Pass[turn] = False
         Move = input("Enter you move (Resign = 0,Pass = 1, Place a Stone = 2): ")
@@ -40,9 +40,10 @@ def go():
 
         # SENDING PACKET TO GUI
         # send_gui_packet(gameBoard, TerrBoard, 'n', score, LastPlay)
-
-        print(gameBoard)
-        print(TerrBoard)
+        print("\n                           Board")
+        Board.Drawboard()
+        print("\n                           Territory")
+        Board.Drawboard(TerrBoard)
         print("Score [White,Black]:", score)
 
     if score[0] > score[1] or (Resign and turn == 1):
