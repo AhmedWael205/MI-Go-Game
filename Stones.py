@@ -13,24 +13,9 @@ class Turn(IntEnum):
 
 
 class stones:
-    _Wgroup = []
-    _LWgroup = []
-    _Bgroup = []
-    _LBgroup = []
-    _Egroup = [[(i, j) for i in range(19) for j in range(19)]]
-    _Groups = [_Wgroup, _Bgroup, _Egroup]
-    _LGroups = [_LWgroup, _LBgroup]
-    _CapturedStones = [0, 0]
-    _FutureBoardState = []
-    _WPreviousBoardStates = []
-    _BPreviousBoardStates = []
-    _PreviousBoardStates = [_WPreviousBoardStates, _BPreviousBoardStates]
-    _BlackTerr = []
-    _WhiteTerr = []
-    _TerrGroups = [_WhiteTerr,_BlackTerr]
 
     ########################################################################################################################
-    def __init__(self,bCapturedStones=0,wCapturedStones=0 ,wloc=[], bloc=[]):
+    def __init__(self, wloc=[], bloc=[],bCapturedStones=0,wCapturedStones=0):
         self._Wgroup = []
         self._LWgroup = []
         self._Bgroup = []
@@ -38,7 +23,7 @@ class stones:
         self._Egroup = [[(i, j) for i in range(19) for j in range(19)]]
         self._Groups = [self._Wgroup, self._Bgroup, self._Egroup]
         self._LGroups = [self._LWgroup, self._LBgroup]
-        self._CapturedStones = [bCapturedStones, wCapturedStones]
+        self._CapturedStones = [0, 0]
         self._FutureBoardState = []
         self._WPreviousBoardStates = []
         self._BPreviousBoardStates = []
@@ -166,13 +151,14 @@ class stones:
     ########################################################################################################################
     def _EatGroups(self, location, turn,color):
         Eat = False
-        for group in self._LGroups[1 - turn]:
+        for group in reversed(self._LGroups[1 - turn]):
             if location in group and len(group) == 1:
                 removedGroup = self._LGroups[1 - turn].index([location])
                 self._UpdateBoard(location, color,self._Groups[1 - turn][removedGroup])
                 self._CapturedStones[turn] = self._CapturedStones[turn] + len(self._Groups[1 - turn][removedGroup])
                 self._UpdateEmpty(location, self._Groups[1 - turn][removedGroup][:])
                 self._LGroups[1 - turn].remove([location])
+                self._UpdateAffectedLib(self._Groups[1 - turn][removedGroup], turn)
                 del self._Groups[1 - turn][removedGroup]
                 Eat = True
 
@@ -348,3 +334,30 @@ class stones:
         return False
 
 ########################################################################################################################
+    def _UpdateAffectedLib(self,removedGroup,turn):
+        for location in removedGroup:
+            for x in [(location[0] + 1, location[1]), (location[0] - 1, location[1]),
+                      (location[0], location[1] + 1),
+                      (location[0], location[1] - 1)]:
+                if x[0] < 0 or x[1] < 0 or x[0] > 18 or x[1] > 18:
+                    continue
+                else:
+                    for group in self._Groups[turn]:
+                        w = self._Groups[turn].index(group)
+                        if x in group and location not in self._LGroups[turn][w]:
+                            self._LGroups[turn][w].append(location)
+
+    def Drawboard(self,Board = []):
+        if len(Board) == 0:
+            Board = self._board
+        print ("N\t0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18\t")
+        for i in range (19):
+            print(i, end="\t")
+            for j in range (19):
+                if Board[i][j] == 1:
+                    print(u"\u2588", end="  ")
+                elif Board[i][j] == -1:
+                    print("▒", end="  ")
+                else:
+                    print(".", end="  ")
+            print()
