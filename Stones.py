@@ -31,6 +31,7 @@ class stones:
         self._BlackTerr = []
         self._WhiteTerr = []
         self._TerrGroups = [self._WhiteTerr, self._BlackTerr]
+        self.stoneAge = np.zeros((19, 19), dtype=int)
 
         self._board = np.zeros((19, 19), dtype=int)
         if len(wloc) != 0:
@@ -49,7 +50,7 @@ class stones:
 
         self._CreateLibs()
         self._LGroups = [self._LWgroup, self._LBgroup]
-
+        self.stoneAge = np.where(self._board, 1, 0)
         # print(self._LGroups)
 
     ########################################################################################################################
@@ -57,7 +58,7 @@ class stones:
     def AddStone(self, glocation, turn):
         location = (int(glocation[0]),int(glocation[1]))
         # print(location)
-        if location[0] < 0 or location[1] < 0  or location[0] > 18 or location[1] > 18 or self._board[location[0]][location[1]] != Position.empty:
+        if location[0] < 0 or location[1] < 0 or location[0] > 18 or location[1] > 18 or self._board[location[0]][location[1]] != Position.empty:
             print("Invalid Location")
             return False
 
@@ -88,6 +89,8 @@ class stones:
             self._UpdateBoard(location,color)
 
         self._PreviousBoardStates[turn].append(np.copy(self._FutureBoardState))
+        self.stoneAge = np.where(self._board, self.stoneAge + 1, 0)
+        self.stoneAge[location[0]][location[1]] = 1
         return True
 
     ########################################################################################################################

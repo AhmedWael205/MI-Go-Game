@@ -38,11 +38,11 @@ for move in moveLogJsonArr:
     # TODO (column,row) corrosponds to glocation used or it is swaped
     if move["move"]["type"] == "place":
         x=backEndGame.AddStone(
-            (move["move"]["point"]["column"], move["move"]["point"]["row"]), turn)
+            (move["move"]["point"]["row"],move["move"]["point"]["column"]), turn)
         #gameBoard = backEndGame.getBoard()
         #print(gameBoard)
         if(not x):
-            print("Error in location",(move["move"]["point"]["column"], move["move"]["point"]["row"]))
+            print("Error in location",(move["move"]["point"]["row"],move["move"]["point"]["column"]))
     elif (move["move"]["type"] == "pass"):
         pass
     elif (move["move"]["type"] == "resign"):
@@ -53,6 +53,8 @@ for move in moveLogJsonArr:
         pass
         print("Error in parsing JSON FILE AT GAME INIT CONFIG")
     turn = 1 - turn
+    #backEndGame.Drawboard()
+    #input('Press any key ...')
 
 score, TerrBoard = backEndGame.getScoreAndTerrBoard()
 print(score)
