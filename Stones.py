@@ -1,5 +1,6 @@
 import numpy as np
 from enum import IntEnum
+import copy
 
 class Position(IntEnum):
     black = -1
@@ -12,10 +13,43 @@ class Turn(IntEnum):
     white = 0
 
 
+"""
+
+data members:
+    _Wgroup: a list of white groups where each group is a list of tuple where each tuple is x-y coordinates
+    _LWgroup: a list of of groups where each index corresponds to the liberties of the group at the same index in _Wgroup
+                _LWgroup[i] = Liberties(_Wgroup[i])
+    _Bgroup: a list of black groups where each group is a list of tuple where each tuple is x-y coordinates
+    _LBgroup: a list of of groups where each group corresponds to the liberties of the group at the same index in _Bgroup
+                _LBgroup[i] = Liberties(_Bgroup[i])
+    _Egroup: a list of empty groups where each group is a list of tuple where each tuple is x-y coordinates
+        initially one group with all board locations
+    _Group: a list of _Wgroup, _Bgroup, _Egroup
+    _LGroup: a list of _LWgroup, _LBgroup
+    _CapturedStones: a two element list where each one represent the number of captured stones of the other team
+        _CapturedStones[0] = captured black stones, _CapturedStones[1] = captured white stones
+    _WPreviousBoardStates: Previous board states when it was white player turn
+    _BPreviousBoardStates: Previous board states when it was black player turn
+    _PreviousBoardStates: a two element list where each list represent the previous states of a certain player
+        _PreviousBoardStates[0] = _WPreviousBoardStates,  _PreviousBoardStates[1] = _BPreviousBoardStates
+    _WhiteTerr: a list of groups where each one represent a group of empty places that are considered as white territory
+    _BlackTerr: a list of groups where each one represent a group of empty places that are considered as black territory
+    _TerrGroups: a two element list where each element represent a list of certain players territories
+        _TerrGroups[0] = _WhiteTerr, _TerrGroups[1] = _BlackTerr
+    _board: a 19*19 matrix where each element represent whether it is empty or black stone or white stone
+        _board[i][j] = 0 -> Empty, _board[i][j] = 1 -> White stone, _board[i][j] = -1 -> Black stone
+    stoneAge: a 19*19 matrix where each element represent the number of moves that a stones at that location has been placed
+        stoneAge[i][j] = Number of Turns Stone Exists at  _board[i][j] (if its empty then 0)
+
+member functions:
+    //TODO 
+
+"""
+
 class stones:
 
     ########################################################################################################################
-    def __init__(self, wloc=[], bloc=[],bCapturedStones=0,wCapturedStones=0):
+    def __init__(self, wloc=[], bloc=[], bCapturedStones=0, wCapturedStones=0):
         self._Wgroup = []
         self._LWgroup = []
         self._Bgroup = []
@@ -23,8 +57,7 @@ class stones:
         self._Egroup = [[(i, j) for i in range(19) for j in range(19)]]
         self._Groups = [self._Wgroup, self._Bgroup, self._Egroup]
         self._LGroups = [self._LWgroup, self._LBgroup]
-        self._CapturedStones = [0, 0]
-        self._FutureBoardState = []
+        self._CapturedStones = [wCapturedStones, bCapturedStones]
         self._WPreviousBoardStates = []
         self._BPreviousBoardStates = []
         self._PreviousBoardStates = [self._WPreviousBoardStates, self._BPreviousBoardStates]
@@ -54,8 +87,36 @@ class stones:
         # print(self._LGroups)
 
     ########################################################################################################################
+    def checkKo(self, glocation, turn):
+        location = (int(glocation[0]), int(glocation[1]))
 
-    def AddStone(self, glocation, turn):
+        if turn == 1:
+            color = Position.black
+        else:
+            color = Position.white
+
+        tempGame = copy.deepcopy(self)
+
+        if self._EatGroups(location, turn, color):
+            self._UpdateGroups(location, turn, color)
+
+        elif self._SuicideMove(location, turn):
+            return False
+        else:
+            self._UpdateGroups(location, turn, color)
+            self._UpdateEmpty(location)
+            self._UpdateBoard(location, color)
+
+        if not self._CheckState(self._board, self._PreviousBoardStates[turn]):
+            self.__dict__.update(tempGame.__dict__)
+            return True
+        else:
+            self.__dict__.update(tempGame.__dict__)
+            return False
+
+
+
+    def AddStone(self, glocation, turn,test = 0):
         location = (int(glocation[0]),int(glocation[1]))
         # print(location)
         if location[0] < 0 or location[1] < 0 or location[0] > 18 or location[1] > 18 or self._board[location[0]][location[1]] != Position.empty:
@@ -66,18 +127,15 @@ class stones:
             color = Position.black
         else:
             color = Position.white
+        eat = False
+        if test:
+            self._UpdateGroups(location, turn, color)
+            return True
 
-        self._FutureBoardState = np.copy(self._board)
-        self._FutureBoardState [location[0]][location[1]] = color
-
-
-        if  not self._CheckState(self._FutureBoardState,self._PreviousBoardStates[turn]):
-            print("Super KO")
-            return False
-
+        tempGame = copy.deepcopy(self)
 
         if self._EatGroups(location, turn,color):
-            print("Eat Group")
+            eat = True
             self._UpdateGroups(location, turn,color)
 
         elif self._SuicideMove(location,turn):
@@ -88,7 +146,15 @@ class stones:
             self._UpdateEmpty(location)
             self._UpdateBoard(location,color)
 
-        self._PreviousBoardStates[turn].append(np.copy(self._FutureBoardState))
+
+        if  not self._CheckState(self._board,self._PreviousBoardStates[turn]):
+            print("Super KO")
+            self.__dict__.update(tempGame.__dict__)
+            return False
+
+        if eat:
+            print("Eat Group")
+        self._PreviousBoardStates[turn].append(np.copy(self._board))
         self.stoneAge = np.where(self._board, self.stoneAge + 1, 0)
         self.stoneAge[location[0]][location[1]] = 1
         return True
@@ -274,27 +340,14 @@ class stones:
 ########################################################################################################################
     def _SuicideMove(self,location,turn):
 
-        if turn == 1:
-            a = Position.black
-        else:
-            a = Position.white
-
-        Suicide = True
-        for x in [(location[0] + 1, location[1]), (location[0] - 1, location[1]),
-                  (location[0], location[1] + 1),
-                  (location[0], location[1] - 1)]:
-            if x[0] < 0 or x[1] < 0 or x[0] > 18 or x[1] > 18:
-                continue
-            if self._board[x[0]][x[1]] == a or self._board[x[0]][x[1]] == Position.empty:
-                Suicide = False
-                break
-        if not Suicide:
-            for group in self._LGroups[1-turn]:
-                if len(group) == 1 and group == [location]:
-                    return True
-
-
-        return Suicide
+        tempGame = copy.deepcopy(self)
+        tempGame.AddStone(location,turn,1)
+        return tempGame.ChecKSuicide(turn)
+    def ChecKSuicide(self,turn):
+        for group in self._LGroups[turn]:
+            if len(group) == 0:
+                return True
+        return False
 
 ########################################################################################################################
     def getBoard(self):
@@ -349,6 +402,8 @@ class stones:
                         w = self._Groups[turn].index(group)
                         if x in group and location not in self._LGroups[turn][w]:
                             self._LGroups[turn][w].append(location)
+
+########################################################################################################################
 
     def Drawboard(self,Board = []):
         if len(Board) == 0:

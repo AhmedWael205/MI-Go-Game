@@ -1,5 +1,7 @@
 from unittest.mock import patch
 import unittest
+import io
+import sys
 
 from Go import go
 
@@ -47,18 +49,28 @@ class GoTestCase3(unittest.TestCase):
 class GoTestCase4(unittest.TestCase):
     def test_go_suicide(self):
         user_input = [
-            '2', '1', '1',
-            '1',                # White Pass
+            '2','7','7',
             '2', '1', '0',
-            '1',                # White Pass
+            '2', '1', '2',
+            '2', '2', '0',
+            '2', '2', '1',
+            '2', '0', '2',
+            '2', '2', '2',
             '2', '0', '1',
-            '2', '0', '0',      # White Try Suicide should fail and plays again
-            '0', '0',           # White plays again
-            '2', '2',
+            '1',
+            '2', '3', '1',
+            '1',
+            '2', '3', '2',
+            '1',
+            '2', '2', '3',
+            '1',
+            '2', '1', '3',
+            '2', '1', '1',
+            '8','8',
             '1',
             '1'
         ]
-        expected_output = [7.5, 4]
+        expected_output = [15.5, 5]
         with patch('builtins.input', side_effect=user_input):
             stacks = go()
         self.assertEqual(stacks, expected_output)
@@ -103,19 +115,31 @@ class GoTestCase6(unittest.TestCase):
             '2', '1', '2',
             '2', '1', '1',
             '2', '2', '1',
-            '2', '1', '1',
-            '2', '2', '1',   # Super KO
-            '0', '0',
+            '2', '1', '1',   # Super KO
+            '8', '8',
             '1',
             '1'
         ]
-        expected_output = [11.5, 6]
+        expected_output = [13.5, 4]
         with patch('builtins.input', side_effect=user_input):
             stacks = go()
         self.assertEqual(stacks, expected_output)
 
     #################################################################################
-
+"""
+class GoTestCase7(unittest.TestCase):
+    def getJSONscore(self):
+        expected_output = "[191.5, 834]"
+        capturedOutput = io.StringIO()
+        sys.stdout = capturedOutput
+        exec(open('ServerConfig.py').read())
+        sys.stdout = sys.__stdout__
+        x = capturedOutput.getvalue()[3500:3512][:]
+        if x == expected_output:
+            return True
+        else:
+            return False
+"""
 
 if __name__ == "__main__":
     unittest.main()

@@ -42,7 +42,9 @@ for move in moveLogJsonArr:
         #gameBoard = backEndGame.getBoard()
         #print(gameBoard)
         if(not x):
-            print("Error in location",(move["move"]["point"]["row"],move["move"]["point"]["column"]))
+            print("Error in location",(move["move"]["point"]["row"],move["move"]["point"]["column"]),turn)
+            backEndGame.Drawboard()
+            input('Press any key ...')
     elif (move["move"]["type"] == "pass"):
         pass
     elif (move["move"]["type"] == "resign"):
