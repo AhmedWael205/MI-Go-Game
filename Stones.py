@@ -87,8 +87,30 @@ class stones:
         # print(self._LGroups)
 
     ########################################################################################################################
+    def CheckEye(self, location, turn):
+        if turn == 0:
+            a = Position.black
+        else:
+            a = Position.white
+
+        Eye = True
+        for x in [(location[0] + 1, location[1]), (location[0] - 1, location[1]),
+                  (location[0], location[1] + 1),
+                  (location[0], location[1] - 1)]:
+            if x[0] < 0 or x[1] < 0 or x[0] > 18 or x[1] > 18:
+                continue
+            if self._board[x[0]][x[1]] == a or self._board[x[0]][x[1]] == Position.empty:
+                Eye = False
+
+        return Eye
+
+    ########################################################################################################################KK
     def checkKo(self, glocation, turn):
         location = (int(glocation[0]), int(glocation[1]))
+
+        if location[0] < 0 or location[1] < 0 or location[0] > 18 or location[1] > 18 or self._board[location[0]][
+            location[1]] != Position.empty:
+            return True
 
         if turn == 1:
             color = Position.black
@@ -101,7 +123,7 @@ class stones:
             self._UpdateGroups(location, turn, color)
 
         elif self._SuicideMove(location, turn):
-            return False
+            return True
         else:
             self._UpdateGroups(location, turn, color)
             self._UpdateEmpty(location)
@@ -112,10 +134,9 @@ class stones:
             return True
         else:
             self.__dict__.update(tempGame.__dict__)
-            return False
+            return self.CheckEye(location, turn)
 
-
-
+    ########################################################################################################################
     def AddStone(self, glocation, turn,test = 0):
         location = (int(glocation[0]),int(glocation[1]))
         # print(location)
