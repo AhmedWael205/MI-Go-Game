@@ -88,11 +88,11 @@ async def ProcessEvent(C, websocket):
                 C.snddict["type"] = "NAME"
                 C.snddict["name"] = C.name
                 JSND = json.dumps(C.snddict)
+                C.state = ClientState.READY
+                await websocket.send(JSND)
                 #Testing
                 print("In PE: ", C.state.name)
                 print("SND: ", C.snddict)
-                C.state = ClientState.READY
-                await websocket.send(JSND)
                 return 
         elif (C.state == ClientState.READY):
             if (C.rcvdict["type"] == "START"):
@@ -117,16 +117,11 @@ async def ProcessEvent(C, websocket):
                     #will wait for opponent move in that 
                     C.state = ClientState.IDLE
         elif (C.state == ClientState.THINKING):
-            C.snddict["type"] = "START"
+            C.snddict["type"] = "MOVE"
             C.snddict["move"] = dict()
-            #This means eno kan el dor 3alaya w da awel move fel game aw eno galy oponent move
-            if (C.rcvdict["type"] == "START"):
+            #This means eno kan el dor 3alaya w da awel move fel game aw eno galy oponent move aw kunt ba3ta invlaid move
+            if (C.rcvdict["type"] == "START" or C.rcvdict["type"] == "INVALID" or C.rcvdict["type"] == "MOVE"):
                 #call func generate move
-                C.move = C.game.getMove()
-                
-            #This means eno previously sent move kanet INVALID fa we need a new move
-            elif (C.rcvdict["type"] == "INVALID"):
-                #SEND to agent that they shouldn't save last move and call func to generate move
                 C.move = C.game.getMove()
             
             if (C.move == 0):
@@ -141,7 +136,7 @@ async def ProcessEvent(C, websocket):
             await websocket.send(JSND)
             C.state = ClientState.AWAITING_MOVE_RESPONSE
         elif (C.state == ClientState.IDLE):
-            if (C.rcvdict["type"] == "START"):
+            if (C.rcvdict["type"] == "MOVE"):
                 
                 #call func to SEND opponent move to agent
                 OppMove = C.rcvdict["move"]
