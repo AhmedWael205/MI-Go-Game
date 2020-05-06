@@ -12,6 +12,7 @@ import websockets
 import logging
 import json
 import enum
+from ServerConfig import server_config
 
 #To access the name of an Enum you should add .name to you variable
 class ClientState(enum.Enum):
@@ -34,10 +35,12 @@ class Client:
     disconnectdict = {"type" : "DISCONNECTION"} 
     def __init__(self):
         self.state = ClientState.INIT #At first the client starts from INIT state will change accordingly 
-        self.color = ""
+        self.color = None
         #initializing Snd and Rcv Dictionaries
         self.rcvdict = dict()
-        self.snddict = dict()        
+        self.snddict = dict()
+        self.game = None
+        self.move = None       
 
 async def main():
     logger = logging.getLogger('websockets')
@@ -93,14 +96,20 @@ async def ProcessEvent(C, websocket):
                 return 
         elif (C.state == ClientState.READY):
             if (C.rcvdict["type"] == "START"):
+                
                 #to be sent to the Agent
                 GameConfig = C.rcvdict["configuration"]
-                #############################################################Kefah###############################################
+                FileName = 'ConfigData.txt'
+                with open(FileName, 'w') as outfile:
+                    json.dump(data, outfile)
+                
                 #Call func Initialize game
+                C.game = server_config(FileName)
                 GameState = GameConfig["initialState"]
                 C.color = C.rcvdict["color"]
+                
                 #if true that means that it's our turn
-                if ((C.color == GameState["turn"]) and (len(GameConfig["moveLog"]) % 2 == 0)):
+                if (((C.color == GameState["turn"]) and (len(GameConfig["moveLog"]) % 2 == 0)) or ((C.color != GameState["turn"]) and (len(GameConfig["moveLog"]) % 2 != 0))):
                     #Need to generate new move to send to server
                     C.state = ClientState.THINKING
                     await ProcessEvent(C, websocket)
@@ -109,24 +118,46 @@ async def ProcessEvent(C, websocket):
                     C.state = ClientState.IDLE
         elif (C.state == ClientState.THINKING):
             C.snddict["type"] = "START"
+            C.snddict["move"] = dict()
             #This means eno kan el dor 3alaya w da awel move fel game aw eno galy oponent move
             if (C.rcvdict["type"] == "START"):
-                #############################################################Kefah###############################################
                 #call func generate move
-                C.snddict["move"] = {}
+                C.move = C.game.getMove()
+                
             #This means eno previously sent move kanet INVALID fa we need a new move
             elif (C.rcvdict["type"] == "INVALID"):
-                #############################################################Kefah###############################################
                 #SEND to agent that they shouldn't save last move and call func to generate move
-                C.snddict["move"] = {}
+                C.move = C.game.getMove()
+            
+            if (C.move == 0):
+                m = {"type": "resign"}
+            elif (C.move == 1):
+                m = {"type": "pass"}
+            else:
+                m = {"type": "place", "point": {"row":C.move[0], "column":C.move[1]}}
+            
+            C.snddict["move"] = m
             JSND = json.dumps(C.snddict)
             await websocket.send(JSND)
             C.state = ClientState.AWAITING_MOVE_RESPONSE
         elif (C.state == ClientState.IDLE):
             if (C.rcvdict["type"] == "START"):
-                #############################################################Kefah###############################################
+                
                 #call func to SEND opponent move to agent
-                move = C.rcvdict["move"]
+                OppMove = C.rcvdict["move"]
+                if (OppMove["type"] == "resign"):
+                    C.game.play(0)
+                elif (OppMove["type"] == "pass"):
+                    C.game.play(1)
+                else:
+                    PlaceMove = OppMove["point"]
+                    if(C.color == 'B'):
+                        turn = 0
+                    else:
+                        turn = 1
+                    MoveTuple = (PlaceMove["row"], PlaceMove["column"], turn)
+                    C.game.play(MoveTuple)
+                    
                 C.state = ClientState.THINKING
                 await ProcessEvent(C, websocket)
         elif (C.state == ClientState.AWAITING_MOVE_RESPONSE):
@@ -135,8 +166,19 @@ async def ProcessEvent(C, websocket):
                 C.state = ClientState.THINKING
                 await ProcessEvent(C, websocket)
             else:
-                #############################################################Kefah###############################################
+                
                  #SEND to agent that they should save last move
+                if (C.move == 0):
+                    C.game.play(0)
+                elif (C.move == 1):
+                    C.game.play(1)
+                else:
+                    if(C.color == 'B'):
+                        turn = 1
+                    else:
+                        turn = 0
+                    MoveTuple = (C.move[0], C.move[1], turn)
+                    C.game.play(MoveTuple)
                 C.state = ClientState.IDLE
         return
 
