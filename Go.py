@@ -14,8 +14,7 @@ def go():
     GUI = GuiComm()
     if int(initial_locations):
         file_name = input("Enter the JSON file name: ")
-        # todo @wael
-        game = server_config(file_name)
+        game = server_config(file_name,mode=0,GuiObject=GUI)
     else:
         # MODE = 0 MEANING HUMAN VS AI
         game = Game(GuiObject=GUI, mode=0)

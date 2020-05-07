@@ -26,8 +26,8 @@ data members:
         initially one group with all board locations
     _Group: a list of _Wgroup, _Bgroup, _Egroup
     _LGroup: a list of _LWgroup, _LBgroup
-    _CapturedStones: a two element list where each one represent the number of captured stones of the other team
-        _CapturedStones[0] = captured black stones, _CapturedStones[1] = captured white stones
+    CapturedStones: a two element list where each one represent the number of captured stones of the other team
+        CapturedStones[0] = captured black stones, CapturedStones[1] = captured white stones
     _WPreviousBoardStates: Previous board states when it was white player turn
     _BPreviousBoardStates: Previous board states when it was black player turn
     _PreviousBoardStates: a two element list where each list represent the previous states of a certain player
@@ -54,11 +54,12 @@ member functions:
     _getTerr: Return a 19*19 board with white and black territories on it
     _TryEatGroups: Check whether this new added stone will captured an opponent group or not
     _UpdateAffectedLib: When a group is captured this function update neighbours groups liberties
-    CheckEye: check whether this move falls between four of the opponent plays or not
-    CheckSuicide: check whether this move is suicide or not
-    checkKo: checks whether this move is a super KO
-    AddStone: add a stones to the board and do all necessary changes
+    CheckEye: Check whether this move falls between four of the opponent stones or not
+    CheckSuicide: Check whether this move is suicide or not
+    checkKo: Checks whether this move is a super KO
+    AddStone: Add a stones to the board and do all necessary changes
     getBoard: Returns a 19*19 representing the board with stones on it (1 = white, -1 = black, 0 = empty)
+    getScoreAndTerrBoard: Calculate game score and territory board of each player
     tryAction: Tries if this move is valid or not
     DrawBoard: Draws the board in the console
     
@@ -75,7 +76,7 @@ class stones:
         self._Egroup = [[(i, j) for i in range(19) for j in range(19)]]
         self._Groups = [self._Wgroup, self._Bgroup, self._Egroup]
         self._LGroups = [self._LWgroup, self._LBgroup]
-        self._CapturedStones = [wCapturedStones, bCapturedStones]
+        self.CapturedStones = [wCapturedStones, bCapturedStones]
         self._WPreviousBoardStates = []
         self._BPreviousBoardStates = []
         self._PreviousBoardStates = [self._WPreviousBoardStates, self._BPreviousBoardStates]
@@ -106,6 +107,13 @@ class stones:
 
     ########################################################################################################################
     def CheckEye(self, location, turn):
+        """
+        (Deprecated)
+        Check whether this move falls between four of the opponent stones or not
+        :param location: the location of the added stone (row,column)
+        :param turn: the current player turn (0 = white turn, 1 = black turn)
+        :return: True if this location falls between 4 of the opponent stones, else returns false
+        """
         if turn == 0:
             a = Position.black
         else:
@@ -124,6 +132,13 @@ class stones:
 
     ########################################################################################################################
     def checkKo(self, glocation, turn):
+        """
+        (Deprecated)
+        Checks whether this move is a super KO
+        :param glocation: (string) the location of the added stone (row,column)
+        :param turn: the current player turn (0 = white turn, 1 = black turn)
+        :return: True if Suicide or superKO move
+        """
         location = (int(glocation[0]), int(glocation[1]))
 
         if location[0] < 0 or location[1] < 0 or location[0] > 18 or location[1] > 18 or self._board[location[0]][
@@ -156,8 +171,15 @@ class stones:
 
     ########################################################################################################################
     def AddStone(self, glocation, turn,test = 0):
+        """
+        Add a stones to the board and do all necessary changes
+        :param glocation: (string) the location of the added stone (row,column)
+        :param turn: the current player turn (0 = white turn, 1 = black turn)
+        :param test: Whether we are testing to add or we are actually adding it
+        :return: true if valid, false if not
+        """
+
         location = (int(glocation[0]),int(glocation[1]))
-        # print(location)
         if location[0] < 0 or location[1] < 0 or location[0] > 18 or location[1] > 18 or self._board[location[0]][location[1]] != Position.empty:
             print("Invalid Location")
             return False
@@ -200,6 +222,12 @@ class stones:
 
     ########################################################################################################################
     def _CreateGroups(self, locations, Group):
+        """
+        Create initial groups of white stones or black stones or empty locations given all these group locations
+        :param locations: set of locations (row,coulumn) to be used to create white or black or empty groups
+        :param Group: which group is it ("w" = white, "b" = black, else empty)
+        :return: the create group
+        """
         if Group == "w":
             Cgroup = self._Wgroup
         elif Group == "b":
@@ -242,6 +270,10 @@ class stones:
 
     ########################################################################################################################
     def _CreateLibs(self):
+        """
+        Create initial liberty groups for black and white stones
+        :return: None
+        """
         for Groups, LGroups in [(self._Groups[0], self._LGroups[0]), (self._Groups[1], self._LGroups[1])]:
             count = 0
             for Group in Groups:
@@ -258,12 +290,19 @@ class stones:
 
     ########################################################################################################################
     def _EatGroups(self, location, turn,color):
+        """
+        Check whether this new added stone will capture any of opponent groups
+        :param location: the location of the added stone (row,column)
+        :param turn: the current player turn (0 = white turn, 1 = black turn)
+        :param color: the color of the current player turn (1 = white, -1 = black)
+        :return: True, if it capture an oppponent group else false
+        """
         Eat = False
         for group in reversed(self._LGroups[1 - turn]):
             if location in group and len(group) == 1:
                 removedGroup = self._LGroups[1 - turn].index([location])
                 self._UpdateBoard(location, color,self._Groups[1 - turn][removedGroup])
-                self._CapturedStones[turn] = self._CapturedStones[turn] + len(self._Groups[1 - turn][removedGroup])
+                self.CapturedStones[turn] = self.CapturedStones[turn] + len(self._Groups[1 - turn][removedGroup])
                 self._UpdateEmpty(location, self._Groups[1 - turn][removedGroup][:])
                 self._LGroups[1 - turn].remove([location])
                 self._UpdateAffectedLib(self._Groups[1 - turn][removedGroup], turn)
@@ -274,6 +313,13 @@ class stones:
 
     ########################################################################################################################
     def _UpdateGroups(self, location, turn,color):
+        """
+        Update current player groups and their corresponding liberties groups based on the new move
+        :param location: the location of the added stone (row,column)
+        :param turn: the current player turn (0 = white turn, 1 = black turn)
+        :param color: the color of the current player turn (1 = white, -1 = black)
+        :return: None
+        """
         loc = []
         for group in self._LGroups[turn]:
             if location in group:
@@ -312,6 +358,12 @@ class stones:
 
     ########################################################################################################################
     def _UpdateEmpty(self, AddedLocation, RemovedLocations=[]):
+        """
+        Update Empty locations groups
+        :param AddedLocation: the added stone location
+        :param RemovedLocations: the removed or captured stones locations if exists
+        :return: None
+        """
         temp = []
         for group in self._Egroup:
             for location in group:
@@ -325,23 +377,40 @@ class stones:
 
     ########################################################################################################################
     def _UpdateBoard(self,AddedLocation,color,RemovedLocations=[]):
+        """
+        Insert Added stone to the board and remove captured stones if exists
+        :param AddedLocation: the added stone location
+        :param color: the color of the current player turn (1 = white, -1 = black)
+        :param RemovedLocations: the removed or captured stones locations if exists
+        :return: None
+        """
         self._board[AddedLocation[0]][AddedLocation[1]] = color
         for location in RemovedLocations:
             self._board[location[0]][location[1]] = 0
 
     ########################################################################################################################
     def _CheckState(self,FutureState,PrevStates):
+        """
+        Check if the board Current state (stones locations, turn) is repeated or not
+        :param FutureState: the future board state after this added stone
+        :param PrevStates: all the previous states when it was this player turn
+        :return: true if it already exists,else false
+        """
         return not any(np.array_equal(FutureState, state) for state in PrevStates)
 
     ########################################################################################################################
     def getScoreAndTerrBoard(self):
+        """
+        Calculate game score and territory board of each player
+        :return: score [White score, Black score] and a 19*19 matrix representing the territories of each player
+        """
         territory = self._CalcTerr()
-        count = 6.5 + self._CapturedStones[0]
+        count = 6.5 + self.CapturedStones[0]
         for group in self._Wgroup:
             count = count + len(group)
         territory[0] = territory[0] + count
 
-        count = self._CapturedStones[1]
+        count = self.CapturedStones[1]
         for group in self._Bgroup:
             count = count + len(group)
         territory[1] = territory[1] + count
@@ -350,6 +419,10 @@ class stones:
 
     ########################################################################################################################
     def _CalcTerr(self):
+        """
+        Calculate territory of black and white stones
+        :return: number of locations belongs to each player territory [White Territory Number, Black Territory Number]
+        """
         Terr = [0, 0]
         self._TerrGroups = [[],[]]
         for group in self._Egroup:
@@ -377,21 +450,37 @@ class stones:
 
     ########################################################################################################################
     def _SuicideMove(self,location,turn):
-
+        """
+        Check if this move is suicide or not
+        :param location: the location of the added stone (row,column)
+        :param turn: the current player turn (0 = white turn, 1 = black turn)
+        :return: True if this move is a suicide move else false
+        """
         tempGame = copy.deepcopy(self)
         tempGame.AddStone(location,turn,1)
         return tempGame.ChecKSuicide(turn)
 
     def ChecKSuicide(self,turn):
+        """
+        Check whether this move is suicide or not
+        :param turn: the current player turn (0 = white turn, 1 = black turn)
+        :return: True if this move is a suicide move else false
+        """
         for group in self._LGroups[turn]:
             if len(group) == 0:
                 return True
         return False
     ########################################################################################################################
     def getBoard(self):
+        """
+        :return: a 19*19 representing the board with stones on it (1 = white, -1 = black, 0 = empty)
+        """
         return self._board
 
     def _getTerr(self):
+        """
+        :return: a 19*19 board with white and black territories on it
+        """
         Terrboard = np.zeros((19, 19), dtype=int)
         for x,y in self._TerrGroups[0]:
             Terrboard[x][y] = 1
@@ -400,6 +489,12 @@ class stones:
         return Terrboard
     ########################################################################################################################
     def tryAction(self,location,turn):
+        """
+        Tries if this move is valid or not
+        :param location: the location of the added stone (row,column)
+        :param turn: the current player turn (0 = white turn, 1 = black turn)
+        :return: True if this move is a valid move else false
+        """
         if turn == 1:
             color = Position.black
         else:
@@ -418,6 +513,13 @@ class stones:
         return True
 
     def _TryEatGroups(self, location, turn,color):
+        """
+        Check whether this new added stone will captured an opponent group or not
+        :param location: the location of the added stone (row,column)
+        :param turn: the current player turn (0 = white turn, 1 = black turn)
+        :param color: the color of the current player turn (1 = white, -1 = black)
+        :return: true if eats group else return false
+        """
         for group in self._LGroups[1 - turn]:
             if location in group and len(group) == 1:
                 return True

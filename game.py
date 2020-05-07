@@ -28,9 +28,7 @@ class Game:
             self.comm.send_gui_packet(mode=self.mode)
             pass
 
-    def play(self, Move, Debugging=False):
-
-        # Todo set pass = false @wael
+    def play(self, Move,turn =-1, Debugging=False):
 
         # Last Play and Valid initialized outside the ifs scope
         valid = False
@@ -45,10 +43,11 @@ class Game:
                 self.Pass[self.turn] = True
                 valid = True
             else:
+                self.Pass[self.turn] = False
                 lastPlay = Move[0:2]
                 # todo move[2] representing el turn mesh Mwgooda men el GUI
-                valid = self.game.AddStone((int(Move[0]), int(Move[1])), int(Move[2]))
-                self.turn = int(Move[2])
+                valid = self.game.AddStone((int(Move[0]), int(Move[1])), turn)
+                self.turn = turn
         else:
             # Todo Coordinate the move m3 samadoni
             if Move == 0:

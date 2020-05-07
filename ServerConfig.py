@@ -4,7 +4,7 @@ from game import Game
 from Stones import Turn
 
 
-def server_config(FileName):
+def server_config(FileName,mode=1,GuiObject=None):
     with open(FileName, 'r') as f:
         GameConfig = json.load(f)
 
@@ -25,8 +25,10 @@ def server_config(FileName):
     """
     instance of backend game supposed to be only one instance
     """
-    # TODO  @wael
-    backEndGame = Game(**gameArgs)
+    if mode == 1:
+        backEndGame = Game(**gameArgs)
+    else:
+        backEndGame = Game(**gameArgs,GuiObject=GuiObject, mode=mode)
 
     turn = Turn.black if GameState["turn"] == "B" else Turn.white
 
