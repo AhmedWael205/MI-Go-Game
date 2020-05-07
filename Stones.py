@@ -42,8 +42,26 @@ data members:
         stoneAge[i][j] = Number of Turns Stone Exists at  _board[i][j] (if its empty then 0)
 
 member functions:
-    //TODO 
-
+    _CreateGroups: Create initial groups of white stones or black stones or empty locations given all these group locations
+    _CreateLibs: Create initial liberty groups for black and white stones
+    _EatGroups: Check whether this new added stone will capture any of opponent groups
+    _UpdateGroups: Update current player groups and their corresponding liberties groups based on the new move
+    _UpdateEmpty: Update Empty locations groups
+    _UpdateBoard: Insert Added stone to the board and remove captured stones if exists
+    _CheckState: Check if the board Current state (stones locations, turn) is repeated or not
+    _CalcTerr: Calculate territory of black and white stones
+    _SuicideMove: Check if this move is suicide or not
+    _getTerr: Return a 19*19 board with white and black territories on it
+    _TryEatGroups: Check whether this new added stone will captured an opponent group or not
+    _UpdateAffectedLib: When a group is captured this function update neighbours groups liberties
+    CheckEye: check whether this move falls between four of the opponent plays or not
+    CheckSuicide: check whether this move is suicide or not
+    checkKo: checks whether this move is a super KO
+    AddStone: add a stones to the board and do all necessary changes
+    getBoard: Returns a 19*19 representing the board with stones on it (1 = white, -1 = black, 0 = empty)
+    tryAction: Tries if this move is valid or not
+    DrawBoard: Draws the board in the console
+    
 """
 
 class stones:
@@ -292,7 +310,6 @@ class stones:
                 affectedGroup = self._LGroups[1 - turn].index(group)
                 self._LGroups[1 - turn][affectedGroup].remove(location)
 
-
     ########################################################################################################################
     def _UpdateEmpty(self, AddedLocation, RemovedLocations=[]):
         temp = []
@@ -315,6 +332,7 @@ class stones:
     ########################################################################################################################
     def _CheckState(self,FutureState,PrevStates):
         return not any(np.array_equal(FutureState, state) for state in PrevStates)
+
     ########################################################################################################################
     def getScoreAndTerrBoard(self):
         territory = self._CalcTerr()
@@ -357,20 +375,19 @@ class stones:
                     self._TerrGroups [state - 1].append((x,y))
         return Terr
 
-
-########################################################################################################################
+    ########################################################################################################################
     def _SuicideMove(self,location,turn):
 
         tempGame = copy.deepcopy(self)
         tempGame.AddStone(location,turn,1)
         return tempGame.ChecKSuicide(turn)
+
     def ChecKSuicide(self,turn):
         for group in self._LGroups[turn]:
             if len(group) == 0:
                 return True
         return False
-
-########################################################################################################################
+    ########################################################################################################################
     def getBoard(self):
         return self._board
 
@@ -381,10 +398,7 @@ class stones:
         for x,y in self._TerrGroups[1]:
             Terrboard[x][y] = -1
         return Terrboard
-
-
-
-########################################################################################################################
+    ########################################################################################################################
     def tryAction(self,location,turn):
         if turn == 1:
             color = Position.black
@@ -403,14 +417,12 @@ class stones:
             return False
         return True
 
-
     def _TryEatGroups(self, location, turn,color):
         for group in self._LGroups[1 - turn]:
             if location in group and len(group) == 1:
                 return True
         return False
-
-########################################################################################################################
+    ########################################################################################################################
     def _UpdateAffectedLib(self,removedGroup,turn):
         for location in removedGroup:
             for x in [(location[0] + 1, location[1]), (location[0] - 1, location[1]),
@@ -424,8 +436,7 @@ class stones:
                         if x in group and location not in self._LGroups[turn][w]:
                             self._LGroups[turn][w].append(location)
 
-########################################################################################################################
-
+    ########################################################################################################################
     def Drawboard(self,Board = []):
         print("White = █\tBlack = ▒\tEmpty = .\t")
         if len(Board) == 0:
