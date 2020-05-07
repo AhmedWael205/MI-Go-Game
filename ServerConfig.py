@@ -21,16 +21,17 @@ def server_config(FileName):
                 "wCapturedStones": wCaptured,
                 "bCapturedStones": bCaptured}
 
-    # TODO  Check for any misplaced argument and if initalization of any argument can affect other class members
+    # TODO  Check for any misplaced argument and if initialization of any argument can affect other class members
     """
-    instance of backend game supposed to be only one instancec
+    instance of backend game supposed to be only one instance
     """
+    # TODO  @wael
     backEndGame = Game(**gameArgs)
 
     turn = Turn.black if GameState["turn"] == "B" else Turn.white
 
     """
-    logically speaking yahia should not send resign move at the begining
+    logically speaking Yahia should not send resign move at the beginning
     """
     """
         Taking the move log and adding stones till we reach final state to begin with
@@ -38,12 +39,12 @@ def server_config(FileName):
     for move in moveLogJsonArr:
 
         if move["move"]["type"] == "place":
-            x=backEndGame.play(
-                (move["move"]["point"]["row"],move["move"]["point"]["column"]), turn)
-            #gameBoard = backEndGame.getBoard()
-            #print(gameBoard)
-            if(not x):
-                print("Error in location",(move["move"]["point"]["row"],move["move"]["point"]["column"]),turn)
+            x = backEndGame.play(
+                (move["move"]["point"]["row"], move["move"]["point"]["column"]), turn)
+            # gameBoard = backEndGame.getBoard()
+            # print(gameBoard)
+            if (not x):
+                print("Error in location", (move["move"]["point"]["row"], move["move"]["point"]["column"]), turn)
                 backEndGame.Drawboard()
                 input('Press any key ...')
         elif (move["move"]["type"] == "pass"):
@@ -56,11 +57,11 @@ def server_config(FileName):
             pass
             print("Error in parsing JSON FILE AT GAME INIT CONFIG")
         turn = 1 - turn
-        #backEndGame.Drawboard()
-        #input('Press any key ...')
+        # backEndGame.Drawboard()
+        # input('Press any key ...')
 
-    #score, TerrBoard = backEndGame.getScoreAndTerrBoard()
-    #print(score)
+    # score, TerrBoard = backEndGame.getScoreAndTerrBoard()
+    # print(score)
     """"
     NOW instance backEnd stage is initialized with the data parsed
     """
