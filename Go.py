@@ -26,6 +26,8 @@ def go():
             # MODE = 0 MEANING HUMAN VS AI
             game = Game(GuiObject=GUI, mode=0)
          """
+
+        # Receiving Human Color
         receivedPacket = GUI.receive_gui_mode()
         Human = receivedPacket[5]
         game = Game(GuiObject=GUI, mode=0)
@@ -66,10 +68,10 @@ def go():
             score = game.game.getScoreAndTerrBoard()[0]
             if turn == Human:
                 if score[Human] - score[1 - Human] > AI_score[Human] - AI_score[1 - Human]:
-                    GUI.send_gui_packet(theBetterMove=1)
+                    GUI.send_gui_packet(theBetterMove=1, betterMoveCoord=AI_move)
                     print("1")
                 else:
-                    GUI.send_gui_packet(theBetterMove=-1)
+                    GUI.send_gui_packet(theBetterMove=-1, betterMoveCoord=AI_move)
                     print("2")
             turn = 1 - turn  # White turn = 0 , Black Turn = 0
     else:

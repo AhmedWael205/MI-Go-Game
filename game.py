@@ -4,6 +4,7 @@ import random
 
 
 class Game:
+
     comm = None
 
     def __init__(self, wloc=[], bloc=[], bCapturedStones=0, wCapturedStones=0, mode=1, GuiObject=None):
@@ -77,22 +78,22 @@ class Game:
                 if self.turn == 1:
                     winner = "White"
                     # SENDING PACKET TO GUI
-                    self.comm.send_gui_packet(gameBoard, 'w', score, lastPlay, 0, True, 0)
+                    self.comm.send_gui_packet(gameBoard, 'w', score, lastPlay, 0, 0, True, 0)
                 else:
                     winner = "Black"
                     # SENDING PACKET TO GUI
-                    self.comm.send_gui_packet(gameBoard, 'b', score, lastPlay, 0, True, 0)
+                    self.comm.send_gui_packet(gameBoard, 'b', score, lastPlay, 0, 0, True, 0)
                 return valid, True
 
             if False not in self.Pass:
                 if score[0] > score[1]:
                     winner = "White"
                     # SENDING PACKET TO GUI
-                    self.comm.send_gui_packet(gameBoard, 'w', score, lastPlay, 0, True, 0)
+                    self.comm.send_gui_packet(gameBoard, 'w', score, lastPlay, 0, 0, True, 0)
                 else:
                     winner = "Black"
                     # SENDING PACKET TO GUI
-                    self.comm.send_gui_packet(gameBoard, 'b', score, lastPlay, 0, True, 0)
+                    self.comm.send_gui_packet(gameBoard, 'b', score, lastPlay, 0, 0, True, 0)
                 return valid, True
 
             if True in self.Pass:
@@ -100,7 +101,7 @@ class Game:
                 lastPlay = [-3, -3]
 
             # Lastly, Sending packet to GUI in in case there's no winner
-            self.comm.send_gui_packet(gameBoard, 'n', score, lastPlay, time=0, moveValidation=valid, theBetterMove=0)
+            self.comm.send_gui_packet(gameBoard, 'n', score, lastPlay, timeBlack=0, timeWhite=0, moveValidation=valid, theBetterMove=0, betterMoveCoord=[])
 
         return valid, False  # not Valid
 
