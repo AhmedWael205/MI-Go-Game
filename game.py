@@ -33,6 +33,7 @@ class Game:
         # Last Play and Valid initialized outside the ifs scope
         valid = False
         lastPlay = []
+
         if self.mode:
             # IF SELF MODE == TRUE, HUMAN VS AI MOVE PARAMETER IS DIFFERENT
 
@@ -70,6 +71,8 @@ class Game:
                 self.game.Drawboard(TerrBoard)
                 print("Score [White,Black]:", score)
 
+            capturedStones = self.game.CapturedStones
+
             if self.Resign:
 
                 # Sending Last PLay as -2,-2 if any player resigns
@@ -78,22 +81,22 @@ class Game:
                 if self.turn == 1:
                     winner = "White"
                     # SENDING PACKET TO GUI
-                    self.comm.send_gui_packet(gameBoard, 'w', score, lastPlay, 0, 0, True, 0)
+                    self.comm.send_gui_packet(gameBoard, 'w', score, lastPlay, 0, 0, True, 0, capturedStones=capturedStones)
                 else:
                     winner = "Black"
                     # SENDING PACKET TO GUI
-                    self.comm.send_gui_packet(gameBoard, 'b', score, lastPlay, 0, 0, True, 0)
+                    self.comm.send_gui_packet(gameBoard, 'b', score, lastPlay, 0, 0, True, 0, capturedStones=capturedStones)
                 return valid, True
 
             if False not in self.Pass:
                 if score[0] > score[1]:
                     winner = "White"
                     # SENDING PACKET TO GUI
-                    self.comm.send_gui_packet(gameBoard, 'w', score, lastPlay, 0, 0, True, 0)
+                    self.comm.send_gui_packet(gameBoard, 'w', score, lastPlay, 0, 0, True, 0, capturedStones=capturedStones)
                 else:
                     winner = "Black"
                     # SENDING PACKET TO GUI
-                    self.comm.send_gui_packet(gameBoard, 'b', score, lastPlay, 0, 0, True, 0)
+                    self.comm.send_gui_packet(gameBoard, 'b', score, lastPlay, 0, 0, True, 0, capturedStones=capturedStones)
                 return valid, True
 
             if True in self.Pass:
@@ -101,7 +104,7 @@ class Game:
                 lastPlay = [-3, -3]
 
             # Lastly, Sending packet to GUI in in case there's no winner
-            self.comm.send_gui_packet(gameBoard, 'n', score, lastPlay, timeBlack=0, timeWhite=0, moveValidation=valid, theBetterMove=0, betterMoveCoord=[])
+            self.comm.send_gui_packet(gameBoard, 'n', score, lastPlay, timeBlack=0, timeWhite=0, moveValidation=valid, theBetterMove=0, betterMoveCoord=[], capturedStones=capturedStones)
 
         return valid, False  # not Valid
 

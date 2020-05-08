@@ -16,7 +16,7 @@ class GuiComm:
     #   TERRITORY NOT REQ IN DOC :
     #   def send_gui_packet(self, board, terr, winLoss, scoreArr, lastPlay, mode, time, moveValidation):
 
-    def send_gui_packet(self, board=[], winLoss="", scoreArr=[], lastPlay=[], timeBlack=0, timeWhite=0, moveValidation=True, theBetterMove=0, betterMoveCoord=[]):
+    def send_gui_packet(self, board=[], winLoss="", scoreArr=[], lastPlay=[], timeBlack=0, timeWhite=0, moveValidation=True, theBetterMove=0, betterMoveCoord=[], capturedStones=[]):
         # FLATTENING THE numpy 2D ARRAY
         tempBoard = list((np.array(board)).flatten())
 
@@ -29,7 +29,7 @@ class GuiComm:
         # CONCATENATION INTO A SINGLE STRING PACKET SEPARATED BY ","
         packet = winLoss + "," + ",".join(map(str, tempBoard)) + "," + ",".join(
             map(str, scoreArr[::-1])) + "," + ",".join(map(str, lastPlay[0:2])) + "," + str(
-            timeBlack) + "," + str(timeWhite) + "," + str(moveValidation) + "," + str(theBetterMove) + "," + ",".join(map(str, betterMoveCoord))
+            timeBlack) + "," + str(timeWhite) + "," + str(moveValidation) + "," + str(theBetterMove) + "," + ",".join(map(str, betterMoveCoord)) + "," + ",".join(map(str, capturedStones))
 
         # DON'T SEND UNLESS THERE'S A CLIENT
         ack = self.sendSocket.recv()
