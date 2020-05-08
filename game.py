@@ -7,6 +7,7 @@ class Game:
     comm = None
 
     def __init__(self, wloc=[], bloc=[], bCapturedStones=0, wCapturedStones=0, mode=1, GuiObject=None):
+
         self.turn = 1
         self.Pass = [False, False]
         self.Resign = False
