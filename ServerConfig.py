@@ -2,12 +2,13 @@ import json
 import numpy as np
 from game import Game
 from Stones import Turn
+import asyncio
 
-
-def server_config(FileName,mode=1,GuiObject=None):
-    with open(FileName, 'r') as f:
-        GameConfig = json.load(f)
-
+def server_config(GameConfig,mode=1,GuiObject=None):
+    #with open(FileName, 'r') as f:
+        #GameConfig = json.load(f)
+    #print("1")
+    #print(GameConfig)
     # TODO DO we need reamining time of anything at the initalization state(begining of the game from a certain stage)
     GameState = GameConfig["initialState"]
     moveLogJsonArr = GameConfig["moveLog"]
@@ -31,7 +32,8 @@ def server_config(FileName,mode=1,GuiObject=None):
         backEndGame = Game(**gameArgs,GuiObject=GuiObject, mode=mode)
 
     turn = Turn.black if GameState["turn"] == "B" else Turn.white
-
+    #print("1.1")
+    #print(turn)
     """
     logically speaking Yahia should not send resign move at the beginning
     """
@@ -41,14 +43,15 @@ def server_config(FileName,mode=1,GuiObject=None):
     for move in moveLogJsonArr:
 
         if move["move"]["type"] == "place":
+            print("location", (move["move"]["point"]["row"], move["move"]["point"]["column"]), turn)
             x = backEndGame.play(
-                (move["move"]["point"]["row"], move["move"]["point"]["column"]), turn)
+                (move["move"]["point"]["row"], move["move"]["point"]["column"], turn))
             # gameBoard = backEndGame.getBoard()
             # print(gameBoard)
             if (not x):
                 print("Error in location", (move["move"]["point"]["row"], move["move"]["point"]["column"]), turn)
                 backEndGame.Drawboard()
-                input('Press any key ...')
+                # input('Press any key ...')
         elif (move["move"]["type"] == "pass"):
             pass
         elif (move["move"]["type"] == "resign"):
@@ -67,5 +70,5 @@ def server_config(FileName,mode=1,GuiObject=None):
     """"
     NOW instance backEnd stage is initialized with the data parsed
     """
-
+    #print("2")
     return backEndGame

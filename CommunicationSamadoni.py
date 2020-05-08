@@ -17,6 +17,7 @@ import enum
 from ServerConfig import server_config
 
 
+
 # To access the name of an Enum you should add .name to you variable
 class ClientState(enum.Enum):
     INIT = 1  # The client is initializing the connection with the server
@@ -106,12 +107,13 @@ async def ProcessEvent(C, websocket):
 
                 # to be sent to the Agent
                 GameConfig = C.rcvdict["configuration"]
-                FileName = 'ConfigData.txt'
-                with open(FileName, 'w') as outfile:
-                    json.dump(data, outfile)
 
                 # Call func Initialize game
-                C.game = server_config(FileName)
+                C.game = server_config(GameConfig)
+                #loop = asyncio.new_event_loop()
+                #asyncio.set_event_loop(loop)
+                #C.game = loop.run_until_complete(server_config(GameConfig))
+                print("Hi")
                 GameState = GameConfig["initialState"]
                 C.color = C.rcvdict["color"]
 

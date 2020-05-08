@@ -14,12 +14,12 @@ class Game:
         if GuiObject is None:
             self.comm = GuiComm()
         else:
-            self.comm = GuiObject
+            self.comm = GuiObject           
         if mode == 1:
             # AI vs AI mode
             # Mode is FALSE packet indicating AI VS AI, Disregard the rest of the packet
             self.mode = False
-            self.comm.send_gui_packet(mode=self.mode)
+            #self.comm.send_gui_packet(mode=self.mode)
             pass
         else:
             # Human vs AI mode
@@ -33,7 +33,7 @@ class Game:
         # Last Play and Valid initialized outside the ifs scope
         valid = False
         lastPlay = []
-        if not self.mode:
+        if self.mode:
             # IF SELF MODE == TRUE, MOVE PARAMETER IS DIFFERENT
 
             if Move[2] == 1:  # MOVE[2] IS THE RESIGN
@@ -80,22 +80,22 @@ class Game:
                 if self.turn == 1:
                     winner = "White"
                     # SENDING PACKET TO GUI
-                    self.comm.send_gui_packet(gameBoard, 'w', score, lastPlay, self.mode, 0, True)
+                    #self.comm.send_gui_packet(gameBoard, 'w', score, lastPlay, self.mode, 0, True)
                 else:
                     winner = "Black"
                     # SENDING PACKET TO GUI
-                    self.comm.send_gui_packet(gameBoard, 'b', score, lastPlay, 0, self.mode, 0, True)
+                    #self.comm.send_gui_packet(gameBoard, 'b', score, lastPlay, 0, self.mode, 0, True)
                 return valid, True
 
             if False not in self.Pass:
                 if score[0] > score[1]:
                     winner = "White"
                     # SENDING PACKET TO GUI
-                    self.comm.send_gui_packet(gameBoard, 'w', score, lastPlay, self.mode, 0, True)
+                    #self.comm.send_gui_packet(gameBoard, 'w', score, lastPlay, self.mode, 0, True)
                 else:
                     winner = "Black"
                     # SENDING PACKET TO GUI
-                    self.comm.send_gui_packet(gameBoard, 'b', score, lastPlay, self.mode, 0, True)
+                    #self.comm.send_gui_packet(gameBoard, 'b', score, lastPlay, self.mode, 0, True)
                 return valid, True
 
             if True in self.Pass:
@@ -103,7 +103,7 @@ class Game:
                 lastPlay = [-3, -3]
 
             # Lastly, Sending packet to GUI in in case there's no winner
-            self.comm.send_gui_packet(gameBoard, 'n', score, lastPlay, mode=self.mode, time=0, moveValidation=valid)
+            #self.comm.send_gui_packet(gameBoard, 'n', score, lastPlay, mode=self.mode, time=0, moveValidation=valid)
 
         return valid, False  # not Valid
 
