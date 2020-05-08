@@ -16,7 +16,7 @@ class GuiComm:
     #   TERRITORY NOT REQ IN DOC :
     #   def send_gui_packet(self, board, terr, winLoss, scoreArr, lastPlay, mode, time, moveValidation):
 
-    def send_gui_packet(self, board=[], winLoss="", scoreArr=[], lastPlay=[], timeBlack=0, timeWhite=0, moveValidation=True, theBetterMove=0, betterMoveCoord=[], capturedStones=[]):
+    def send_gui_packet(self, board=[], winLoss="", scoreArr=[], lastPlay=[], timeBlack=0, timeWhite=0, moveValidation=1, theBetterMove=0, betterMoveCoord=[], capturedStones=[]):
         # FLATTENING THE numpy 2D ARRAY
         tempBoard = list((np.array(board)).flatten())
 
