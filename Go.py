@@ -14,9 +14,10 @@ def go():
 
     GUI = GuiComm()
 
-    #TODO receive current mode
-    mode = 0
-    if mode == 1: # AI vs Human
+    receivedPacket = GUI.receive_gui_mode()
+    mode = receivedPacket[0]
+
+    if mode == 1:  # AI vs Human
         """
         if int(initial_locations):
             file_name = input("Enter the JSON file name: ")
@@ -25,18 +26,16 @@ def go():
             # MODE = 0 MEANING HUMAN VS AI
             game = Game(GuiObject=GUI, mode=0)
          """
-        #TODO receive Human color
-        receivedPacket = 0
-        Human = receivedPacket[0]
+        receivedPacket = GUI.receive_gui_mode()
+        Human = receivedPacket[5]
         game = Game(GuiObject=GUI, mode=0)
         game_end = False
         turn = game.turn
         while not game_end:
             valid = False
             if turn == Human:
-                # Receive from GUI a packet
 
-                # PACKET CONTAINS: X, Y, RESIGN, PASS RESPECTIVELY
+                # Receive from GUI a packet
                 receivedPacket = GUI.receive_gui_mode()
                 AI_move = game.getMove()
                 valid, game_end = game.play(receivedPacket, turn)
@@ -46,10 +45,8 @@ def go():
                     # receive another one
                     receivedPacket = GUI.receive_gui_mode()
                     valid, game_end = game.play(receivedPacket, turn)
-                LastPlay = receivedPacket[0:2]
+                LastPlay = receivedPacket[1:3]
 
-
-            # Todo Confirm en el Last play of AI_MOVE matches Last play of human in game.play
             AI_move = game.getMove()
             tempGame = copy.deepcopy(game.game)
             valid = tempGame.AddStone(AI_move, turn)
@@ -69,10 +66,10 @@ def go():
             score = game.game.getScoreAndTerrBoard()[0]
             if turn == Human:
                 if score[Human] - score[1 - Human] > AI_score[Human] - AI_score[1 - Human]:
-                    #todo send human move is better
+                    GUI.send_gui_packet(theBetterMove=1)
                     print("1")
                 else:
-                    #todo send AI Move is better and send AI_move
+                    GUI.send_gui_packet(theBetterMove=-1)
                     print("2")
             turn = 1 - turn  # White turn = 0 , Black Turn = 0
     else:
