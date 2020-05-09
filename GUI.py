@@ -13,12 +13,10 @@ from GUIcommunication import GuiComm
 def go():
 
     GUI = GuiComm()
-    mode = -2
-    while mode == -2:
-        receivedPacket = GUI.receive_gui_mode()
-        GUI.send_gui_packet()
-        mode = receivedPacket[0]
-    print("Recieved mode = ",receivedPacket[0],receivedPacket[1],receivedPacket[2],receivedPacket[3],receivedPacket[4],receivedPacket[5])
+    receivedPacket = GUI.receive_gui_mode()
+    GUI.send_gui_packet()
+    mode = receivedPacket[0]
+    print("Recieved mode = ", receivedPacket[0], receivedPacket[1], receivedPacket[2], receivedPacket[3], receivedPacket[4], receivedPacket[5])
 
     if mode == 1:  # AI vs Human
         """
@@ -30,10 +28,9 @@ def go():
             game = Game(GuiObject=GUI, mode=0)
          """
         # Receiving Human Color
-        Human = -2
-        while receivedPacket[1] == -2 and receivedPacket[2] == -2 and receivedPacket[3] == -2 and receivedPacket[4] == -2 and receivedPacket[5] == -2 :
-            receivedPacket = GUI.receive_gui_mode()
-            GUI.send_gui_packet()
+        Human = 1
+        # receivedPacket = GUI.receive_gui_mode()
+        # GUI.send_gui_packet()
         print("Recieved mode = ", receivedPacket[0], receivedPacket[1], receivedPacket[2], receivedPacket[3],
                   receivedPacket[4], receivedPacket[5])
         print("Human color = ", Human)
@@ -44,22 +41,24 @@ def go():
         while not game_end:
             valid = False
             if turn == Human:
-
+                input("human")
                 # Receive from GUI a packet
                 receivedPacket = GUI.receive_gui_mode()
                 GUI.send_gui_packet()
-                AI_move = game.getMove()
                 valid, game_end = game.play(receivedPacket, turn)
+                game.Drawboard()
+                input("board drawn")
                 while not valid:
                     # send a packet back to GUI
-                    dummy = GUI.receive_gui_mode()
+                    input("human invalid")
+                    dummy = GUI.receive_gui()
                     GUI.send_gui_packet(moveValidation=False)
                     # receive another one
                     receivedPacket = GUI.receive_gui_mode()
                     GUI.send_gui_packet()
                     valid, game_end = game.play(receivedPacket, turn)
                 LastPlay = receivedPacket[1:3]
-
+            input("AI")
             AI_move = game.getMove()
             tempGame = copy.deepcopy(game.game)
             valid = tempGame.AddStone(AI_move, turn)
@@ -67,10 +66,10 @@ def go():
                 AI_move = game.getMove()
                 valid = tempGame.AddStone(AI_move, turn)
             if turn != Human:
-                valid, game_end = game.play(AI_move, turn,mode=True)
+                valid, game_end = game.play(AI_move, turn, mode=True)
                 while not valid:
                     AI_move = game.getMove()
-                    valid, game_end = game.play(AI_move, turn,mode=True)
+                    valid, game_end = game.play(AI_move, turn, mode=True)
 
             AI_score = tempGame.getScoreAndTerrBoard()[0]
 
@@ -79,11 +78,11 @@ def go():
             score = game.game.getScoreAndTerrBoard()[0]
             if turn == Human:
                 if score[Human] - score[1 - Human] > AI_score[Human] - AI_score[1 - Human]:
-                    dummy = GUI.receive_gui_mode()
+                    dummy = GUI.receive_gui()
                     GUI.send_gui_packet(theBetterMove=1, betterMoveCoord=AI_move)
                     print("1")
                 else:
-                    dummy = GUI.receive_gui_mode()
+                    dummy = GUI.receive_gui()
                     GUI.send_gui_packet(theBetterMove=-1, betterMoveCoord=AI_move)
                     print("2")
             turn = 1 - turn  # White turn = 0 , Black Turn = 0
