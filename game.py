@@ -32,8 +32,6 @@ class Game:
         # Last Play and Valid initialized outside the ifs scope
         valid = False
         lastPlay = []
-        print(Move)
-        input("el moveee")
         if self.mode and mode is None:
             # IF SELF MODE == TRUE, HUMAN VS AI MOVE PARAMETER IS DIFFERENT
 
@@ -47,12 +45,8 @@ class Game:
             else:
                 self.Pass[self.turn] = False
                 lastPlay = Move[2:0:-1]
-                print(lastPlay)
-                input("..last..play..")
                 valid = self.game.AddStone((int(Move[2]), int(Move[1])), turn)
-                print(valid)
                 self.game.Drawboard()
-                input("Valid")
                 self.turn = turn
         else:
             if Move == 0:
@@ -122,16 +116,9 @@ class Game:
 
             # Lastly, Sending packet to GUI in in case there's no winner
             self.turn = 1 - self.turn
-            print("WASALNA")
-
             dummy = self.comm.receive_gui()
-            print("WASALNA_22")
-            print("capturedStones IN GAME.PY ", capturedStones)
             self.comm.send_gui_packet(gameBoard, 'n', score, lastPlay, timeBlack=0, timeWhite=0, moveValidation=valid,
                                       theBetterMove=0, betterMoveCoord=[0, 0], capturedStones=capturedStones)
-            print("WASALNA_33333333")
-            input("......")
-
         return valid, False  # not Valid
 
     def getMove(self):

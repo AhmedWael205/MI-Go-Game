@@ -25,9 +25,6 @@ class GuiComm:
                         timeBlack=0, timeWhite=0, moveValidation=1,
                         theBetterMove=0, betterMoveCoord=[-1, -1], capturedStones=None):
         # FLATTENING THE numpy 2D ARRAY
-        # print("CURRENT \n", board)
-        # print("LASTT \n ", self.lastBoard)
-
         if lastPlay != self.lastPlay:
             self.lastPlay = lastPlay
         else:
@@ -43,8 +40,6 @@ class GuiComm:
         else:
             theBetterMove = self.theBetterMove
 
-        # print("Score array current", scoreArr)
-        # print("Score array LAAASTT ", self.lastScoreArr)
         if scoreArr is not None and scoreArr != self.lastScoreArr:
             self.lastScoreArr = scoreArr
         else:
@@ -52,12 +47,10 @@ class GuiComm:
 
         scoreArr[0] = int(scoreArr[0])
         scoreArr[1] = int(scoreArr[1])
-        # print("Score array LAAASTT AFTER IFFFFFFFFFFFF", self.lastScoreArr)
         if np.array_equal(board, np.zeros((19, 19), dtype=int)):
             board = self.lastBoard
         else:
             self.lastBoard = board
-        # print("LASTT 3AKS \n ", self.lastBoard)
         tempBoard = list((np.array(board)).flatten())
 
         # CONVERTING INT32 TO INT FOR // (JSON) // SERIALIZATION
@@ -86,12 +79,6 @@ class GuiComm:
 
         # CONVERT PACKET TO ARR
         packet = packet.split(",")
-        print("packet[0] is " + packet[0])
-        print("packet[1] is " + packet[1])
-        print("packet[2] is " + packet[2])
-        print("packet[3] is " + packet[3])
-        print("packet[4] is " + packet[4])
-        print("packet[5] is " + packet[5])
 
         # PACKET  [MODE, X, Y, RESIGN , PASS, HUMAN COLOR] --> MODE = 1: AI VS AI , -1--> HUMAN
         return int(packet[0]), int(packet[1]), int(packet[2]), int(packet[3]), int(packet[4]), int(packet[5])

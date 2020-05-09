@@ -16,7 +16,6 @@ def go():
     receivedPacket = GUI.receive_gui_mode()
     GUI.send_gui_packet()
     mode = receivedPacket[0]
-    print("Recieved mode = ", receivedPacket[0], receivedPacket[1], receivedPacket[2], receivedPacket[3], receivedPacket[4], receivedPacket[5])
 
     if mode == 1:  # AI vs Human
         """
@@ -29,11 +28,11 @@ def go():
          """
         # Receiving Human Color
         Human = 1
+        # @ Todo CALL RECEIVE A HUMAN COLOUR
+
         # receivedPacket = GUI.receive_gui_mode()
         # GUI.send_gui_packet()
-        print("Recieved mode = ", receivedPacket[0], receivedPacket[1], receivedPacket[2], receivedPacket[3],
-                  receivedPacket[4], receivedPacket[5])
-        print("Human color = ", Human)
+        # print("Human color = ", Human)
 
         game = Game(GuiObject=GUI, mode=0)
         game_end = False
@@ -41,16 +40,13 @@ def go():
         while not game_end:
             valid = False
             if turn == Human:
-                input("human")
                 # Receive from GUI a packet
                 receivedPacket = GUI.receive_gui_mode()
                 GUI.send_gui_packet()
                 valid, game_end = game.play(receivedPacket, turn)
                 game.Drawboard()
-                input("board drawn")
                 while not valid:
                     # send a packet back to GUI
-                    input("human invalid")
                     dummy = GUI.receive_gui()
                     GUI.send_gui_packet(moveValidation=False)
                     # receive another one
@@ -58,7 +54,6 @@ def go():
                     GUI.send_gui_packet()
                     valid, game_end = game.play(receivedPacket, turn)
                 LastPlay = receivedPacket[1:3]
-            input("AI")
             AI_move = game.getMove()
             tempGame = copy.deepcopy(game.game)
             valid = tempGame.AddStone(AI_move, turn)
@@ -80,11 +75,9 @@ def go():
                 if score[Human] - score[1 - Human] >= AI_score[Human] - AI_score[1 - Human]:
                     dummy = GUI.receive_gui()
                     GUI.send_gui_packet(theBetterMove=1, betterMoveCoord=AI_move)
-                    print("1")
                 else:
                     dummy = GUI.receive_gui()
                     GUI.send_gui_packet(theBetterMove=-1, betterMoveCoord=AI_move)
-                    print("2")
             turn = 1 - turn  # White turn = 0 , Black Turn = 0
     else:
         os.system('python CommunicationSamadoni.py BS ws://127.0.0.1:8080')
