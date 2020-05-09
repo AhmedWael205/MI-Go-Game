@@ -21,7 +21,7 @@ class GuiComm:
     #   TERRITORY NOT REQ IN DOC :
     #   def send_gui_packet(self, board, terr, winLoss, scoreArr, lastPlay, mode, time, moveValidation):
 
-    def send_gui_packet(self, board=np.zeros((19, 19), dtype=int), winLoss='n', scoreArr=[0, 0], lastPlay=[-1, -1],
+    def send_gui_packet(self, board=np.zeros((19, 19), dtype=int), winLoss='n', scoreArr=None, lastPlay=[-1, -1],
                         timeBlack=0, timeWhite=0, moveValidation=1,
                         theBetterMove=0, betterMoveCoord=[-1, -1], capturedStones=None):
         # FLATTENING THE numpy 2D ARRAY
@@ -45,10 +45,13 @@ class GuiComm:
 
         # print("Score array current", scoreArr)
         # print("Score array LAAASTT ", self.lastScoreArr)
-        if scoreArr != self.lastScoreArr and scoreArr[0] != 0 and scoreArr[1] != 0:
+        if scoreArr is not None and scoreArr != self.lastScoreArr:
             self.lastScoreArr = scoreArr
         else:
             scoreArr = self.lastScoreArr
+
+        scoreArr[0] = int(scoreArr[0])
+        scoreArr[1] = int(scoreArr[1])
         # print("Score array LAAASTT AFTER IFFFFFFFFFFFF", self.lastScoreArr)
         if np.array_equal(board, np.zeros((19, 19), dtype=int)):
             board = self.lastBoard
@@ -66,7 +69,7 @@ class GuiComm:
 
         # CONCATENATION INTO A SINGLE STRING PACKET SEPARATED BY ","
         packet = winLoss + "," + ",".join(map(str, tempBoard)) + "," + ",".join(
-            map(str, scoreArr[::-1])) + "," + ",".join(map(str, lastPlay[0:2])) + "," + str(
+            map(str, scoreArr)) + "," + ",".join(map(str, lastPlay[0:2])) + "," + str(
             timeBlack) + "," + str(timeWhite) + "," + str(moveValidation) + "," + str(theBetterMove) + "," + ",".join(
             map(str, betterMoveCoord)) + "," + ",".join(map(str, capturedStones))
 
