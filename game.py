@@ -28,20 +28,20 @@ class Game:
             self.mode = True
             pass
 
-    def play(self, Move, turn=-1, Debugging=False):
+    def play(self, Move, turn=-1, Debugging=False,mode=None):
 
         # Last Play and Valid initialized outside the ifs scope
         valid = False
         lastPlay = []
-
-        if self.mode:
+        if self.mode and mode is None:
             # IF SELF MODE == TRUE, HUMAN VS AI MOVE PARAMETER IS DIFFERENT
 
             if Move[3] == 1:  # MOVE[2] IS THE RESIGN
                 self.Resign = True
                 valid = True
             elif Move[4] == 1:  # MOVE[3] IS THE PASS
-                self.Pass[self.turn] = True
+                self.Pass[turn] = True
+                self.turn = turn
                 valid = True
             else:
                 self.Pass[self.turn] = False
@@ -54,13 +54,18 @@ class Game:
                 valid = True
             elif Move == 1:
                 self.Pass[self.turn] = True
+                self.turn = int(Move[2])
                 valid = True
             else:
                 lastPlay = Move
-                valid = self.game.AddStone((int(Move[0]), int(Move[1])), int(Move[2]))
-                self.turn = int(Move[2])
+                if turn == -1:
+                    valid = self.game.AddStone((int(Move[0]), int(Move[1])), int(Move[2]))
+                    self.turn = int(Move[2])
+                else:
+                    valid = self.game.AddStone((int(Move[0]), int(Move[1])), turn)
+                    self.turn = int(turn)
+
         if valid:
-            self.turn = 1 - self.turn
             score, TerrBoard = self.game.getScoreAndTerrBoard()
             gameBoard = self.game.getBoard()
 
@@ -89,7 +94,9 @@ class Game:
                     dummy = self.comm.receive_gui_mode()
                     self.comm.send_gui_packet(gameBoard, 'b', score, lastPlay, 0, 0, True, 0, capturedStones=capturedStones)
                 return valid, True
-
+            if self.Pass[turn]:
+                # If any player chose pass, set last play to -3, -3
+                lastPlay = [-3, -3]
             if False not in self.Pass:
                 if score[0] > score[1]:
                     winner = "White"
@@ -103,11 +110,10 @@ class Game:
                     self.comm.send_gui_packet(gameBoard, 'b', score, lastPlay, 0, 0, True, 0, capturedStones=capturedStones)
                 return valid, True
 
-            if True in self.Pass:
-                # If any player chose pass, set last play to -3, -3
-                lastPlay = [-3, -3]
+
 
             # Lastly, Sending packet to GUI in in case there's no winner
+            self.turn = 1 - self.turn
             dummy = self.comm.receive_gui_mode()
             self.comm.send_gui_packet(gameBoard, 'n', score, lastPlay, timeBlack=0, timeWhite=0, moveValidation=valid, theBetterMove=0, betterMoveCoord=[], capturedStones=capturedStones)
 

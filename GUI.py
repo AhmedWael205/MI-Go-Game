@@ -13,12 +13,14 @@ from GUIcommunication import GuiComm
 def go():
 
     GUI = GuiComm()
+    mode = -2
+    while mode == -2:
+        receivedPacket = GUI.receive_gui_mode()
+        GUI.send_gui_packet()
+        mode = receivedPacket[0]
+    print("Recieved mode = ",receivedPacket[0],receivedPacket[1],receivedPacket[2],receivedPacket[3],receivedPacket[4],receivedPacket[5])
 
-    receivedPacket = GUI.receive_gui_mode()
-    GUI.send_gui_packet()
-    mode = receivedPacket[0]
-
-    if mode == 1 or mode == -2:  # AI vs Human
+    if mode == 1:  # AI vs Human
         """
         if int(initial_locations):
             file_name = input("Enter the JSON file name: ")
@@ -28,9 +30,14 @@ def go():
             game = Game(GuiObject=GUI, mode=0)
          """
         # Receiving Human Color
-        receivedPacket = GUI.receive_gui_mode()
-        GUI.send_gui_packet()
-        Human = receivedPacket[5]
+        Human = -2
+        while receivedPacket[1] == -2 and receivedPacket[2] == -2 and receivedPacket[3] == -2 and receivedPacket[4] == -2 and receivedPacket[5] == -2 :
+            receivedPacket = GUI.receive_gui_mode()
+            GUI.send_gui_packet()
+        print("Recieved mode = ", receivedPacket[0], receivedPacket[1], receivedPacket[2], receivedPacket[3],
+                  receivedPacket[4], receivedPacket[5])
+        print("Human color = ", Human)
+
         game = Game(GuiObject=GUI, mode=0)
         game_end = False
         turn = game.turn
@@ -60,10 +67,10 @@ def go():
                 AI_move = game.getMove()
                 valid = tempGame.AddStone(AI_move, turn)
             if turn != Human:
-                valid, game_end = game.play(AI_move, turn)
+                valid, game_end = game.play(AI_move, turn,mode=True)
                 while not valid:
                     AI_move = game.getMove()
-                    valid, game_end = game.play(AI_move, turn)
+                    valid, game_end = game.play(AI_move, turn,mode=True)
 
             AI_score = tempGame.getScoreAndTerrBoard()[0]
 

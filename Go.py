@@ -8,6 +8,7 @@ import os
 from ServerConfig import server_config
 from game import Game
 from GUIcommunication import GuiComm
+import datetime
 
 
 def go():
@@ -15,10 +16,11 @@ def go():
     GUI = GuiComm()
 
     receivedPacket = GUI.receive_gui_mode()
-    GUI.send_gui_packet()
     mode = receivedPacket[0]
+    print(receivedPacket)
 
-    if mode == 1:  # AI vs Human
+    if mode == -1:  # AI vs Human
+        Time = [900000, 900000]
         """
         if int(initial_locations):
             file_name = input("Enter the JSON file name: ")
@@ -27,9 +29,9 @@ def go():
             # MODE = 0 MEANING HUMAN VS AI
             game = Game(GuiObject=GUI, mode=0)
          """
+
         # Receiving Human Color
-        receivedPacket = GUI.receive_gui_mode()
-        GUI.send_gui_packet()
+        # receivedPacket = GUI.receive_gui_mode()
         Human = receivedPacket[5]
         game = Game(GuiObject=GUI, mode=0)
         game_end = False
@@ -40,17 +42,13 @@ def go():
 
                 # Receive from GUI a packet
                 receivedPacket = GUI.receive_gui_mode()
-                GUI.send_gui_packet()
-                AI_move = game.getMove()
-                valid, game_end = game.play(receivedPacket, turn)
+                valid, game_end = game.play(receivedPacket, turn, Time=Time)
                 while not valid:
                     # send a packet back to GUI
-                    dummy = GUI.receive_gui_mode()
                     GUI.send_gui_packet(moveValidation=False)
                     # receive another one
                     receivedPacket = GUI.receive_gui_mode()
-                    GUI.send_gui_packet()
-                    valid, game_end = game.play(receivedPacket, turn)
+                    valid, game_end = game.play(receivedPacket, turn,Time=Time)
                 LastPlay = receivedPacket[1:3]
 
             AI_move = game.getMove()
@@ -60,10 +58,10 @@ def go():
                 AI_move = game.getMove()
                 valid = tempGame.AddStone(AI_move, turn)
             if turn != Human:
-                valid, game_end = game.play(AI_move, turn)
+                valid, game_end = game.play(AI_move, turn,Time=Time)
                 while not valid:
                     AI_move = game.getMove()
-                    valid, game_end = game.play(AI_move, turn)
+                    valid, game_end = game.play(AI_move, turn,Time=Time)
 
             AI_score = tempGame.getScoreAndTerrBoard()[0]
 
@@ -72,11 +70,9 @@ def go():
             score = game.game.getScoreAndTerrBoard()[0]
             if turn == Human:
                 if score[Human] - score[1 - Human] > AI_score[Human] - AI_score[1 - Human]:
-                    dummy = GUI.receive_gui_mode()
                     GUI.send_gui_packet(theBetterMove=1, betterMoveCoord=AI_move)
                     print("1")
                 else:
-                    dummy = GUI.receive_gui_mode()
                     GUI.send_gui_packet(theBetterMove=-1, betterMoveCoord=AI_move)
                     print("2")
             turn = 1 - turn  # White turn = 0 , Black Turn = 0
