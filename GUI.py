@@ -42,8 +42,12 @@ def go():
             valid = False
             if turn == Human:
                 # Receive from GUI a packet
+                a = datetime.datetime.now()
                 receivedPacket = GUI.receive_gui_mode()
                 GUI.send_gui_packet()
+                b = datetime.datetime.now()
+                c = b - a
+                Time[turn] = Time[turn] - int(c.total_seconds() * 1000)
                 valid, game_end = game.play(receivedPacket, turn,Time=Time)
                 game.Drawboard()
                 while not valid:
@@ -51,20 +55,35 @@ def go():
                     dummy = GUI.receive_gui()
                     GUI.send_gui_packet(moveValidation=False)
                     # receive another one
+                    a = datetime.datetime.now()
                     receivedPacket = GUI.receive_gui_mode()
                     GUI.send_gui_packet()
+                    b = datetime.datetime.now()
+                    c = b - a
+                    Time[turn] = Time[turn] - int(c.total_seconds() * 1000)
                     valid, game_end = game.play(receivedPacket, turn,Time=Time)
                 LastPlay = receivedPacket[1:3]
+            a = datetime.datetime.now()
             AI_move = game.getMove()
+            b = datetime.datetime.now()
+            c = b - a
             tempGame = copy.deepcopy(game.game)
             valid = tempGame.AddStone(AI_move, turn)
             while not valid:
+                a = datetime.datetime.now()
                 AI_move = game.getMove()
+                b = datetime.datetime.now()
+                c = c + (b - a)
                 valid = tempGame.AddStone(AI_move, turn)
             if turn != Human:
+                Time[turn] = Time[turn] - int(c.total_seconds() * 1000)
                 valid, game_end = game.play(AI_move, turn, mode=True,Time=Time)
                 while not valid:
+                    a = datetime.datetime.now()
                     AI_move = game.getMove()
+                    b = datetime.datetime.now()
+                    c = b - a
+                    Time[turn] = Time[turn] - int(c.total_seconds() * 1000)
                     valid, game_end = game.play(AI_move, turn, mode=True,Time=Time)
 
             AI_score = tempGame.getScoreAndTerrBoard()[0]
