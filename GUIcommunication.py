@@ -16,7 +16,8 @@ class GuiComm:
     #   TERRITORY NOT REQ IN DOC :
     #   def send_gui_packet(self, board, terr, winLoss, scoreArr, lastPlay, mode, time, moveValidation):
 
-    def send_gui_packet(self, board=[], winLoss="", scoreArr=[], lastPlay=[], timeBlack=0, timeWhite=0, moveValidation=1, theBetterMove=0, betterMoveCoord=[], capturedStones=[]):
+    def send_gui_packet(self, board=[], winLoss="", scoreArr=[], lastPlay=[], timeBlack=0, timeWhite=0, moveValidation=1,
+                        theBetterMove=0, betterMoveCoord=[], capturedStones=[]):
         # FLATTENING THE numpy 2D ARRAY
         tempBoard = list((np.array(board)).flatten())
 
@@ -29,22 +30,28 @@ class GuiComm:
         # CONCATENATION INTO A SINGLE STRING PACKET SEPARATED BY ","
         packet = winLoss + "," + ",".join(map(str, tempBoard)) + "," + ",".join(
             map(str, scoreArr[::-1])) + "," + ",".join(map(str, lastPlay[0:2])) + "," + str(
-            timeBlack) + "," + str(timeWhite) + "," + str(moveValidation) + "," + str(theBetterMove) + "," + ",".join(map(str, betterMoveCoord)) + "," + ",".join(map(str, capturedStones))
+            timeBlack) + "," + str(timeWhite) + "," + str(moveValidation) + "," + str(theBetterMove) + "," + ",".join(
+            map(str, betterMoveCoord)) + "," + ",".join(map(str, capturedStones))
 
         # DON'T SEND UNLESS THERE'S A CLIENT
         ack = self.sendSocket.recv()
 
         self.sendSocket.send_string(packet)
 
-    # PACKET CONTAINS: MODE, X, Y, RESIGN, PASS RESPECTIVELY
     def receive_gui_mode(self):
         # DON'T SEND UNLESS THERE'S A CLIENT
-        self.receiveSocket.send(b"")
+        self.receiveSocket.send(b"HELLO GUIIII")
 
         packet = self.receiveSocket.recv_string()
 
         # CONVERT PACKET TO ARR
         packet = packet.split(",")
+        print("packet is " + packet[0])
+        print("packet is " + packet[1])
+        print("packet is " + packet[2])
+        print("packet is " + packet[3])
+        print("packet is " + packet[4])
+        print("packet is " + packet[5])
 
-        # PACKET  [MODE, X, Y, RESIGN , PASS, HUMAN COLOR]
+        # PACKET  [MODE, X, Y, RESIGN , PASS, HUMAN COLOR] --> MODE = 1: AI VS AI , -1--> HUMAN
         return int(packet[0]), int(packet[1]), int(packet[2]), int(packet[3]), int(packet[4]), int(packet[5])

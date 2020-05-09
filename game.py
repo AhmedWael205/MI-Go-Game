@@ -81,10 +81,12 @@ class Game:
                 if self.turn == 1:
                     winner = "White"
                     # SENDING PACKET TO GUI
+                    dummy = GUI.receive_gui_mode()
                     self.comm.send_gui_packet(gameBoard, 'w', score, lastPlay, 0, 0, True, 0, capturedStones=capturedStones)
                 else:
                     winner = "Black"
                     # SENDING PACKET TO GUI
+                    dummy = GUI.receive_gui_mode()
                     self.comm.send_gui_packet(gameBoard, 'b', score, lastPlay, 0, 0, True, 0, capturedStones=capturedStones)
                 return valid, True
 
@@ -92,10 +94,12 @@ class Game:
                 if score[0] > score[1]:
                     winner = "White"
                     # SENDING PACKET TO GUI
+                    dummy = GUI.receive_gui_mode()
                     self.comm.send_gui_packet(gameBoard, 'w', score, lastPlay, 0, 0, True, 0, capturedStones=capturedStones)
                 else:
                     winner = "Black"
                     # SENDING PACKET TO GUI
+                    dummy = GUI.receive_gui_mode()
                     self.comm.send_gui_packet(gameBoard, 'b', score, lastPlay, 0, 0, True, 0, capturedStones=capturedStones)
                 return valid, True
 
@@ -104,6 +108,7 @@ class Game:
                 lastPlay = [-3, -3]
 
             # Lastly, Sending packet to GUI in in case there's no winner
+            dummy = GUI.receive_gui_mode()
             self.comm.send_gui_packet(gameBoard, 'n', score, lastPlay, timeBlack=0, timeWhite=0, moveValidation=valid, theBetterMove=0, betterMoveCoord=[], capturedStones=capturedStones)
 
         return valid, False  # not Valid
