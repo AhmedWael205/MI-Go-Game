@@ -18,7 +18,7 @@ def go():
     GUI.send_gui_packet()
     mode = receivedPacket[0]
 
-    if mode == 1 or mode == -2 :  # AI vs Human
+    if mode == 1 or mode == -2:  # AI vs Human
         """
         if int(initial_locations):
             file_name = input("Enter the JSON file name: ")
