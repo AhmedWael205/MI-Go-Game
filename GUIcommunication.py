@@ -10,6 +10,8 @@ class GuiComm:
     capturedStones = [0, 0]
     theBetterMove = 0
     lastScoreArr = [0, 0]
+    winner = 'n'
+    betterMoveCoordLast = [-1, -1]
     # A SEND CHANNEL FOR GUI
     sendSocket = context.socket(zmq.REP)
     sendSocket.bind("tcp://*:2222")
@@ -21,29 +23,41 @@ class GuiComm:
     #   TERRITORY NOT REQ IN DOC :
     #   def send_gui_packet(self, board, terr, winLoss, scoreArr, lastPlay, mode, time, moveValidation):
 
-    def send_gui_packet(self, board=np.zeros((19, 19), dtype=int), winLoss='n', scoreArr=None, lastPlay=[-1, -1],
+    def send_gui_packet(self, board=np.zeros((19, 19), dtype=int), winLoss='n', scoreArr=[0, 0], lastPlay=[-1, -1],
                         timeBlack=0, timeWhite=0, moveValidation=1,
                         theBetterMove=0, betterMoveCoord=[-1, -1], capturedStones=None):
         # FLATTENING THE numpy 2D ARRAY
-        if lastPlay != self.lastPlay:
+        # print("LAST PLAYABLES \n", lastPlay)
+        # print(self.lastPlay)
+        if lastPlay != self.lastPlay and lastPlay[0] != -1 and lastPlay[1] != -1:
             self.lastPlay = lastPlay
         else:
             lastPlay = self.lastPlay
-
+        # print(self.lastPlay)
         if capturedStones != self.capturedStones and capturedStones is not None:
             self.capturedStones = capturedStones
         else:
             capturedStones = self.capturedStones
 
-        if theBetterMove != self.theBetterMove:
+        if theBetterMove != self.theBetterMove and theBetterMove != '0':
             self.theBetterMove = theBetterMove
         else:
             theBetterMove = self.theBetterMove
 
-        if scoreArr is not None and scoreArr != self.lastScoreArr:
+        if scoreArr[0] != 0 and scoreArr[1] != 0 and scoreArr != self.lastScoreArr:
             self.lastScoreArr = scoreArr
         else:
             scoreArr = self.lastScoreArr
+
+        if winLoss != 'n' and winLoss != self.winner:
+            self.winner = winLoss
+        else:
+            winLoss = self.winner
+
+        if betterMoveCoord[0] != -1 and betterMoveCoord[1] != -1 and betterMoveCoord != self.betterMoveCoordLast:
+            self.betterMoveCoordLast = betterMoveCoord
+        else:
+            betterMoveCoord = self.betterMoveCoordLast
 
         scoreArr[0] = int(scoreArr[0])
         scoreArr[1] = int(scoreArr[1])

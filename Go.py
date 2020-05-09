@@ -32,7 +32,7 @@ def go():
 
         # Receiving Human Color
         # receivedPacket = GUI.receive_gui_mode()
-        Human = receivedPacket[5]
+        Human = 1 # receivedPacket[5]
         game = Game(GuiObject=GUI, mode=0)
         game_end = False
         turn = game.turn
