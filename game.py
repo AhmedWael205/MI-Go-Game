@@ -27,7 +27,10 @@ class Game:
             self.mode = True
             pass
 
-    def play(self, Move, turn=-1, Debugging=False, mode=None):
+    def play(self, Move, turn=-1, Debugging=False, mode=None, Time=None):
+        if Time is None:
+            # Time[0] = White Player Time, Time [1] = Black Player Time
+            Time = [900000, 900000]
 
         # Last Play and Valid initialized outside the ifs scope
         valid = False
@@ -87,13 +90,13 @@ class Game:
                     winner = "White"
                     # SENDING PACKET TO GUI
                     dummy = self.comm.receive_gui()
-                    self.comm.send_gui_packet(gameBoard, 'w', score, lastPlay, 0, 0, True, 0,
+                    self.comm.send_gui_packet(gameBoard, 'w', score, lastPlay, Time[1], Time[0], True, 0,
                                               capturedStones=capturedStones)
                 else:
                     winner = "Black"
                     # SENDING PACKET TO GUI
                     dummy = self.comm.receive_gui()
-                    self.comm.send_gui_packet(gameBoard, 'b', score, lastPlay, 0, 0, True, 0,
+                    self.comm.send_gui_packet(gameBoard, 'b', score, lastPlay, Time[1], Time[0], True, 0,
                                               capturedStones=capturedStones)
                 return valid, True
             if self.Pass[turn]:
@@ -104,20 +107,20 @@ class Game:
                     winner = "White"
                     # SENDING PACKET TO GUI
                     dummy = self.comm.receive_gui()
-                    self.comm.send_gui_packet(gameBoard, 'w', score, lastPlay, 0, 0, True, 0,
+                    self.comm.send_gui_packet(gameBoard, 'w', score, lastPlay, Time[1], Time[0], True, 0,
                                               capturedStones=capturedStones)
                 else:
                     winner = "Black"
                     # SENDING PACKET TO GUI
                     dummy = self.comm.receive_gui()
-                    self.comm.send_gui_packet(gameBoard, 'b', score, lastPlay, 0, 0, True, 0,
+                    self.comm.send_gui_packet(gameBoard, 'b', score, lastPlay, Time[1], Time[0], True, 0,
                                               capturedStones=capturedStones)
                 return valid, True
 
             # Lastly, Sending packet to GUI in in case there's no winner
             self.turn = 1 - self.turn
             dummy = self.comm.receive_gui()
-            self.comm.send_gui_packet(gameBoard, 'n', score, lastPlay, timeBlack=0, timeWhite=0, moveValidation=valid,
+            self.comm.send_gui_packet(gameBoard, 'n', score, lastPlay, timeBlack=Time[1], timeWhite=Time[0], moveValidation=valid,
                                       theBetterMove=0, betterMoveCoord=[0, 0], capturedStones=capturedStones)
         return valid, False  # not Valid
 

@@ -8,7 +8,7 @@ import os
 from ServerConfig import server_config
 from game import Game
 from GUIcommunication import GuiComm
-
+import datetime
 
 def go():
 
@@ -18,6 +18,7 @@ def go():
     mode = receivedPacket[0]
 
     if mode == 1:  # AI vs Human
+        Time = [900000, 900000]
         """
         if int(initial_locations):
             file_name = input("Enter the JSON file name: ")
@@ -43,7 +44,7 @@ def go():
                 # Receive from GUI a packet
                 receivedPacket = GUI.receive_gui_mode()
                 GUI.send_gui_packet()
-                valid, game_end = game.play(receivedPacket, turn)
+                valid, game_end = game.play(receivedPacket, turn,Time=Time)
                 game.Drawboard()
                 while not valid:
                     # send a packet back to GUI
@@ -52,7 +53,7 @@ def go():
                     # receive another one
                     receivedPacket = GUI.receive_gui_mode()
                     GUI.send_gui_packet()
-                    valid, game_end = game.play(receivedPacket, turn)
+                    valid, game_end = game.play(receivedPacket, turn,Time=Time)
                 LastPlay = receivedPacket[1:3]
             AI_move = game.getMove()
             tempGame = copy.deepcopy(game.game)
@@ -61,10 +62,10 @@ def go():
                 AI_move = game.getMove()
                 valid = tempGame.AddStone(AI_move, turn)
             if turn != Human:
-                valid, game_end = game.play(AI_move, turn, mode=True)
+                valid, game_end = game.play(AI_move, turn, mode=True,Time=Time)
                 while not valid:
                     AI_move = game.getMove()
-                    valid, game_end = game.play(AI_move, turn, mode=True)
+                    valid, game_end = game.play(AI_move, turn, mode=True,Time=Time)
 
             AI_score = tempGame.getScoreAndTerrBoard()[0]
 

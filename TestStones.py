@@ -15,12 +15,11 @@ def go():
         Move = input("Enter you move (Resign = 0,Pass = 1, Place a Stone = 2): ")
 
         if Move == "2":
-            x = input("Enter Stone x-cord:")
-            y = input("Enter Stone y-cord:")
-            # btab2a bel 3aks(y,x) mesh (x,y)
-            while not Board.AddStone((y,x),turn):
-                x = input("Enter Stone x-cord:")
-                y = input("Enter Stone y-cord:")
+            row = input("Enter Stone row:")
+            column = input("Enter Stone column:")
+            while not Board.AddStone((row,column),turn):
+                row = input("Enter Stone row:")
+                column = input("Enter Stone column:")
                 pass
         elif Move == "1":
             Pass[turn] = True
