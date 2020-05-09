@@ -3,7 +3,7 @@ import unittest
 import io
 import sys
 
-from Go import go
+from TestStones import go
 
 class GoTestCase1(unittest.TestCase):
 

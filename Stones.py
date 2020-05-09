@@ -178,7 +178,8 @@ class stones:
         :param test: Whether we are testing to add or we are actually adding it
         :return: true if valid, false if not
         """
-
+        if glocation == 0 or glocation == 1:
+            return True
         location = (int(glocation[0]),int(glocation[1]))
         if location[0] < 0 or location[1] < 0 or location[0] > 18 or location[1] > 18 or self._board[location[0]][location[1]] != Position.empty:
             print("Invalid Location")

@@ -72,10 +72,14 @@ def go():
 
             score = game.game.getScoreAndTerrBoard()[0]
             if turn == Human:
+                print("Human Score Diff :", score[Human] - score[1 - Human])
+                print("AI Score Diff :", AI_score[Human] - AI_score[1 - Human])
                 if score[Human] - score[1 - Human] >= AI_score[Human] - AI_score[1 - Human]:
+                    print("Here1")
                     dummy = GUI.receive_gui()
                     GUI.send_gui_packet(theBetterMove=1, betterMoveCoord=AI_move)
                 else:
+                    print("Here2")
                     dummy = GUI.receive_gui()
                     GUI.send_gui_packet(theBetterMove=-1, betterMoveCoord=AI_move)
             turn = 1 - turn  # White turn = 0 , Black Turn = 0
