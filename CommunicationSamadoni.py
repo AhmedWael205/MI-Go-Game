@@ -47,6 +47,7 @@ class Client:
         self.snddict = dict()
         self.game = None
         self.move = None
+        self.time = None
 
 
 async def main():
@@ -110,10 +111,7 @@ async def ProcessEvent(C, websocket):
 
                 # Call func Initialize game
                 C.game = server_config(GameConfig)
-                #loop = asyncio.new_event_loop()
-                #asyncio.set_event_loop(loop)
-                #C.game = loop.run_until_complete(server_config(GameConfig))
-                print("Hi")
+                
                 GameState = GameConfig["initialState"]
                 C.color = C.rcvdict["color"]
 
@@ -121,6 +119,7 @@ async def ProcessEvent(C, websocket):
                 if (((C.color == GameState["turn"]) and (len(GameConfig["moveLog"]) % 2 == 0)) or (
                         (C.color != GameState["turn"]) and (len(GameConfig["moveLog"]) % 2 != 0))):
                     # Need to generate new move to send to server
+                    C.time = [GameState["players"]["W"],GameState["players"]["B"]]
                     C.state = ClientState.THINKING
                     await ProcessEvent(C, websocket)
                 else:
@@ -147,13 +146,13 @@ async def ProcessEvent(C, websocket):
             C.state = ClientState.AWAITING_MOVE_RESPONSE
         elif (C.state == ClientState.IDLE):
             if (C.rcvdict["type"] == "MOVE"):
-
+                C.time = [C.rcvdict["remainingTime"]["W"], C.rcvdict["remainingTime"]["B"]]
                 # call func to SEND opponent move to agent
                 OppMove = C.rcvdict["move"]
                 if (OppMove["type"] == "resign"):
-                    C.game.play(0)
+                    C.game.play(0, Debugging=True, Time = C.time)
                 elif (OppMove["type"] == "pass"):
-                    C.game.play(1)
+                    C.game.play(1, Debugging=True, Time = C.time)
                 else:
                     PlaceMove = OppMove["point"]
                     if (C.color == 'B'):
@@ -161,29 +160,30 @@ async def ProcessEvent(C, websocket):
                     else:
                         turn = 1
                     MoveTuple = (PlaceMove["row"], PlaceMove["column"], turn)
-                    C.game.play(MoveTuple)
+                    C.game.play(MoveTuple, Debugging=True, Time = C.time)
 
                 C.state = ClientState.THINKING
                 await ProcessEvent(C, websocket)
         elif (C.state == ClientState.AWAITING_MOVE_RESPONSE):
             if (C.rcvdict["type"] == "INVALID"):
                 print("Invalid Reason ", C.rcvdict["message"])
+                C.time = [C.rcvdict["remainingTime"]["W"], C.rcvdict["remainingTime"]["B"]]
                 C.state = ClientState.THINKING
                 await ProcessEvent(C, websocket)
             else:
-
+                C.time = [C.rcvdict["remainingTime"]["W"], C.rcvdict["remainingTime"]["B"]]
                 # SEND to agent that they should save last move
                 if (C.move == 0):
-                    C.game.play(0)
+                    C.game.play(0, Debugging=True, Time = C.time)
                 elif (C.move == 1):
-                    C.game.play(1)
+                    C.game.play(1, Debugging=True, Time = C.time)
                 else:
                     if (C.color == 'B'):
                         turn = 1
                     else:
                         turn = 0
                     MoveTuple = (C.move[0], C.move[1], turn)
-                    C.game.play(MoveTuple)
+                    C.game.play(MoveTuple, Debugging=True, Time = C.time)
                 C.state = ClientState.IDLE
         return
 
