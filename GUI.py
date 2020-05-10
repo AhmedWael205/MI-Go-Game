@@ -118,8 +118,19 @@ def go():
 
     else:
         # os.system('python CommunicationSamadoni.py BS ws://127.0.0.1:8080')
+        name = None
+        url = None
+
+        x = input("Would you like to enter client name: (1 = yes, 0 = no) ?")
+        if int(x) == 1:
+            name = input("Please enter the client name: ")
+
+        y = input("Would you like to enter client url: (1 = yes, 0 = no) ?")
+        if int(y) == 1:
+            url = input("Please enter the client url: ")
+
         loop = asyncio.get_event_loop()
-        asyncio.ensure_future(main2(GUI))
+        asyncio.ensure_future(main2(GUI, name, url))
         loop.run_forever()
 
     return True
