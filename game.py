@@ -58,6 +58,7 @@ class Game:
                 self.Pass[turn] = True
                 self.turn = turn
                 self.LastPass = self.LastPass + 1
+                valid = self.game.AddStone(1, self.turn)
                 valid = True
             else:
                 self.Pass[self.turn] = False
@@ -72,6 +73,7 @@ class Game:
             elif Move == 1:
                 if self.turn != self.OurTurn:
                     self.previousMove = [-1,-1]
+                valid = self.game.AddStone(1,self.turn)
                 self.Pass[self.turn] = True
                 valid = True
             else:
@@ -193,6 +195,7 @@ class Game:
                     move = 1
                 else:
                     move = [validMoves[y] // 19, validMoves[y]%19]
+                    print("Generate Any valid Random: ",move)
             return move
 
 

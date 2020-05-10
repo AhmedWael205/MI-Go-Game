@@ -48,7 +48,7 @@ class Client:
             self.name = name
         if url is not None:
             self.url = url
-`       self.pause = False            
+        self.pause = False
 
 
 
