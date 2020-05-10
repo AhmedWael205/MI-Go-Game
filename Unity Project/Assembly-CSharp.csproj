@@ -11,7 +11,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace>
     </RootNamespace>
-    <ProjectGuid>{83B3F5B1-B9FE-2D0D-1187-92B9AE8CEBC2}</ProjectGuid>
+    <ProjectGuid>{BDBCE7D3-139D-3EDB-816D-FB1D73476D25}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -82,19 +82,19 @@
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Sprite.shader" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface.shader" />
     <Reference Include="Unity.TextMeshPro.Editor">
-      <HintPath>C:/Users/pc/Desktop/uni/MI/RUBAAAAAAAAAAA/Final MI ya Rab/MI YAHIA human mode with Buttos/Our Final MI/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+      <HintPath>C:/Users/pc/Documents/GitHub/MI-Go-Game/Unity Project/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.PackageManagerUI.Editor">
-      <HintPath>C:/Users/pc/Desktop/uni/MI/RUBAAAAAAAAAAA/Final MI ya Rab/MI YAHIA human mode with Buttos/Our Final MI/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
+      <HintPath>C:/Users/pc/Documents/GitHub/MI-Go-Game/Unity Project/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.CollabProxy.Editor">
-      <HintPath>C:/Users/pc/Desktop/uni/MI/RUBAAAAAAAAAAA/Final MI ya Rab/MI YAHIA human mode with Buttos/Our Final MI/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
+      <HintPath>C:/Users/pc/Documents/GitHub/MI-Go-Game/Unity Project/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-      <HintPath>C:/Users/pc/Desktop/uni/MI/RUBAAAAAAAAAAA/Final MI ya Rab/MI YAHIA human mode with Buttos/Our Final MI/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+      <HintPath>C:/Users/pc/Documents/GitHub/MI-Go-Game/Unity Project/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Analytics.DataPrivacy">
-      <HintPath>C:/Users/pc/Desktop/uni/MI/RUBAAAAAAAAAAA/Final MI ya Rab/MI YAHIA human mode with Buttos/Our Final MI/Library/ScriptAssemblies/Unity.Analytics.DataPrivacy.dll</HintPath>
+      <HintPath>C:/Users/pc/Documents/GitHub/MI-Go-Game/Unity Project/Library/ScriptAssemblies/Unity.Analytics.DataPrivacy.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AIModule">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2018.4.14f1/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>
@@ -298,22 +298,22 @@
       <HintPath>C:/Program Files/Unity/Hub/Editor/2018.4.14f1/Editor/Data/UnityExtensions/Unity/UnitySpatialTracking/RuntimeEditor/UnityEngine.SpatialTracking.dll</HintPath>
     </Reference>
     <Reference Include="AsyncIO">
-      <HintPath>C:/Users/pc/Desktop/uni/MI/RUBAAAAAAAAAAA/Final MI ya Rab/MI YAHIA human mode with Buttos/Our Final MI/Assets/Plugins/AsyncIO.dll</HintPath>
+      <HintPath>C:/Users/pc/Documents/GitHub/MI-Go-Game/Unity Project/Assets/Plugins/AsyncIO.dll</HintPath>
     </Reference>
     <Reference Include="clrzmq">
-      <HintPath>C:/Users/pc/Desktop/uni/MI/RUBAAAAAAAAAAA/Final MI ya Rab/MI YAHIA human mode with Buttos/Our Final MI/Assets/Plugins/clrzmq.dll</HintPath>
+      <HintPath>C:/Users/pc/Documents/GitHub/MI-Go-Game/Unity Project/Assets/Plugins/clrzmq.dll</HintPath>
     </Reference>
     <Reference Include="NetMQ">
-      <HintPath>C:/Users/pc/Desktop/uni/MI/RUBAAAAAAAAAAA/Final MI ya Rab/MI YAHIA human mode with Buttos/Our Final MI/Assets/Plugins/NetMQ.dll</HintPath>
+      <HintPath>C:/Users/pc/Documents/GitHub/MI-Go-Game/Unity Project/Assets/Plugins/NetMQ.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Analytics.Editor">
-      <HintPath>C:/Users/pc/Desktop/uni/MI/RUBAAAAAAAAAAA/Final MI ya Rab/MI YAHIA human mode with Buttos/Our Final MI/Library/PackageCache/com.unity.analytics@3.2.2/Unity.Analytics.Editor.dll</HintPath>
+      <HintPath>C:/Users/pc/Documents/GitHub/MI-Go-Game/Unity Project/Library/PackageCache/com.unity.analytics@3.2.2/Unity.Analytics.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Analytics.StandardEvents">
-      <HintPath>C:/Users/pc/Desktop/uni/MI/RUBAAAAAAAAAAA/Final MI ya Rab/MI YAHIA human mode with Buttos/Our Final MI/Library/PackageCache/com.unity.analytics@3.2.2/Unity.Analytics.StandardEvents.dll</HintPath>
+      <HintPath>C:/Users/pc/Documents/GitHub/MI-Go-Game/Unity Project/Library/PackageCache/com.unity.analytics@3.2.2/Unity.Analytics.StandardEvents.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Analytics.Tracker">
-      <HintPath>C:/Users/pc/Desktop/uni/MI/RUBAAAAAAAAAAA/Final MI ya Rab/MI YAHIA human mode with Buttos/Our Final MI/Library/PackageCache/com.unity.analytics@3.2.2/Unity.Analytics.Tracker.dll</HintPath>
+      <HintPath>C:/Users/pc/Documents/GitHub/MI-Go-Game/Unity Project/Library/PackageCache/com.unity.analytics@3.2.2/Unity.Analytics.Tracker.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2018.4.14f1/Editor/Data/NetStandard/ref/2.0.0/netstandard.dll</HintPath>

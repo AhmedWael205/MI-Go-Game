@@ -181,10 +181,10 @@ public class HumanMode : MonoBehaviour
             for (int n = 0; n < (CapturedMoveWhite - LastCapturedMoveWhite); n++)
             {
                 Sprite StoneSprite;
-                StoneSprite = StoneSprites[1];
+                StoneSprite = StoneSprites[0];
                 string StoneName = StoneSprite.name;
                 // Debug.Log("Inside  Drawing n :" + n);
-                GameObject CapturedStone = Instantiate(StonePrefab, new Vector2(XCapturePositionWhite[LastCapturedIndexWhite + n], YCapturePositionWhite[LastCapturedIndexWhite + n]), Quaternion.identity);
+                GameObject CapturedStone = Instantiate(StonePrefab, new Vector2(XCapturePositionBlack[LastCapturedIndexWhite + n], YCapturePositionBlack[LastCapturedIndexWhite + n]), Quaternion.identity);
                 CapturedStone.GetComponent<Stone>().StoneName = StoneName;
                 CapturedStone.GetComponent<SpriteRenderer>().sprite = StoneSprite;
 
@@ -204,10 +204,10 @@ public class HumanMode : MonoBehaviour
             for (int n = 0; n < (CapturedMoveBlack - LastCapturedMoveBlack); n++)
             {
                 Sprite StoneSprite;
-                StoneSprite = StoneSprites[0];
+                StoneSprite = StoneSprites[1];
                 string StoneName = StoneSprite.name;
                 //  Debug.Log("Inside  Drawing n :" + n);
-                GameObject CapturedStone = Instantiate(StonePrefab, new Vector2(XCapturePositionBlack[LastCapturedIndexBlack + n], YCapturePositionBlack[LastCapturedIndexBlack + n]), Quaternion.identity);
+                GameObject CapturedStone = Instantiate(StonePrefab, new Vector2(XCapturePositionWhite[LastCapturedIndexBlack + n], YCapturePositionWhite[LastCapturedIndexBlack + n]), Quaternion.identity);
                 CapturedStone.GetComponent<Stone>().StoneName = StoneName;
                 CapturedStone.GetComponent<SpriteRenderer>().sprite = StoneSprite;
 
@@ -216,7 +216,6 @@ public class HumanMode : MonoBehaviour
             //Debug.Log("Inside After Drawing Captured Move Index :" + LastCapturedIndexBlack);
             LastCapturedMoveBlack = CapturedMoveBlack;
             // Debug.Log("Inside After Drawing Last Captured Move :" + LastCapturedMoveBlack);
-
         }
     }
 
