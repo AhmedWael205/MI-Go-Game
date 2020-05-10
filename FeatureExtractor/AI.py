@@ -69,7 +69,7 @@ class AIplayer:
         self.MCTS = MCTS
 
         if self.MCTS != 0:
-            self.vmodel = load_model("ValueNoKoModel12.h5")
+            self.vmodel = load_model("FeatureExtractor/ValueNoKoModel12.h5")
             self.TreeAgent = Agent(MCTS, self.pmodel, self.vmodel, mctSims)
 
     def getMove(self, game: stones, turn, prevMove=(-2, -2)):
