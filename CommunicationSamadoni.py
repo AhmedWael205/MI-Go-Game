@@ -48,6 +48,7 @@ class Client:
             self.name = name
         if url is not None:
             self.url = url
+`       self.pause = False            
 
 
 
@@ -62,9 +63,6 @@ async def main2(GUIObject=None,name=None,url=None):
     # mode = receivedPacket[0]
     # if mode ==1:
     #     return
-    logger = logging.getLogger('websockets')
-    logger.setLevel(logging.INFO)
-    logger.addHandler(logging.StreamHandler())
     C = Client(name,url)
     while True:
         async with websockets.connect(C.url) as websocket:
@@ -97,6 +95,10 @@ async def ProcessEvent(C, websocket,GUI):
         print("Game ended")
         print("Reason ", C.rcvdict["reason"])
         print("Winner ", C.rcvdict["winner"])
+        if(C.rcvdict["reason"]=="pause"):
+            C.pause = True
+        else:
+            C.pause = False
         C.state = ClientState.READY
         return
     elif (C.rcvdict["type"] == "DISCONNECTION"):
@@ -121,7 +123,10 @@ async def ProcessEvent(C, websocket,GUI):
                 GameConfig = C.rcvdict["configuration"]
 
                 # Call func Initialize game
-                C.game = server_config(GameConfig,GuiObject=GUI)
+                if(not C.pause):
+                    C.game = server_config(GameConfig=GameConfig,GuiObject=GUI)
+                else:
+                    C.game = C.game
                 
                 GameState = GameConfig["initialState"]
                 C.color = C.rcvdict["color"]
@@ -144,9 +149,11 @@ async def ProcessEvent(C, websocket,GUI):
             C.snddict["type"] = "MOVE"
             C.snddict["move"] = dict()
             # This means eno kan el dor 3alaya w da awel move fel game aw eno galy oponent move aw kunt ba3ta invlaid move
-            if (C.rcvdict["type"] == "START" or C.rcvdict["type"] == "INVALID" or C.rcvdict["type"] == "MOVE"):
+            if (C.rcvdict["type"] == "START" or C.rcvdict["type"] == "MOVE"):
                 # call func generate move
-                C.move = C.game.getMove()
+                C.move = C.game.getMove(invalid = False)
+            elif (C.rcvdict["type"] == "INVALID"):
+                C.move = C.game.getMove(invalid = True)
 
             if (C.move == 0):
                 m = {"type": "resign"}
