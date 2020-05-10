@@ -126,7 +126,7 @@ async def ProcessEvent(C, websocket,GUI):
 
                 # Call func Initialize game
                 if(not C.pause):
-                    C.game = server_config(GameConfig,GuiObject=GUI)
+                    C.game = server_config(GameConfig=GameConfig,GuiObject=GUI)
                 else:
                     C.game = C.game
                 

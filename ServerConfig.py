@@ -4,9 +4,12 @@ from game import Game
 from Stones import Turn
 import asyncio
 
-def server_config(GameConfig,mode=1,GuiObject=None):
-    #with open(FileName, 'r') as f:
-        #GameConfig = json.load(f)
+def server_config(GameConfig,FileName=None,mode=1,GuiObject=None):
+    if(FileName is None):
+        GameConfig = GameCofig
+    else:
+        with open(FileName, 'r') as f:
+            GameConfig = json.load(f)
     #print("1")
     #print(GameConfig)
     # TODO DO we need reamining time of anything at the initalization state(begining of the game from a certain stage)
