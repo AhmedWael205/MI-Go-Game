@@ -29,6 +29,10 @@ class GuiComm:
         # FLATTENING THE numpy 2D ARRAY
         # print("LAST PLAYABLES \n", lastPlay)
         # print(self.lastPlay)
+        if lastPlay == 1:
+            lastPlay = [-3,-3]
+        if  lastPlay == 0:
+            lastPlay = [-2, -2]
         if lastPlay != self.lastPlay and lastPlay[0] != -1 and lastPlay[1] != -1:
             self.lastPlay = lastPlay
         else:

@@ -32,15 +32,10 @@ class Client:
     # Taken from command line for future purposes
     # name of the team
     name = "GG"
-    # if (sys.argv[1] != None):
-    #     name = sys.argv[1]
-        # url for WS
     url = "ws://localhost:8080"
-    # if (sys.argv[2] != None):
-    #     url = sys.argv[2]
     disconnectdict = {"type": "DISCONNECTION"}
 
-    def __init__(self):
+    def __init__(self,name=None,url=None):
         self.state = ClientState.INIT  # At first the client starts from INIT state will change accordingly
         self.color = None
         # initializing Snd and Rcv Dictionaries
@@ -49,12 +44,15 @@ class Client:
         self.game = None
         self.move = None
         self.time = None
-        self.pause = False
+        if name is not None:
+            self.name = name
+        if url is not None:
+            self.url = url
 
 
 
 
-async def main2(GUIObject=None):
+async def main2(GUIObject=None,name=None,url=None):
     if GUIObject == None:
         GUI = GuiComm()
     else:
@@ -64,8 +62,10 @@ async def main2(GUIObject=None):
     # mode = receivedPacket[0]
     # if mode ==1:
     #     return
-    
-    C = Client()
+    logger = logging.getLogger('websockets')
+    logger.setLevel(logging.INFO)
+    logger.addHandler(logging.StreamHandler())
+    C = Client(name,url)
     while True:
         async with websockets.connect(C.url) as websocket:
             while True:
@@ -96,10 +96,6 @@ async def ProcessEvent(C, websocket,GUI):
     if (C.rcvdict["type"] == "END"):
         print("Game ended")
         print("Reason ", C.rcvdict["reason"])
-        if(C.rcvdict["reason"] == "pause"):
-            C.pause = True
-        else:
-            C.pause = False
         print("Winner ", C.rcvdict["winner"])
         C.state = ClientState.READY
         return
@@ -125,10 +121,7 @@ async def ProcessEvent(C, websocket,GUI):
                 GameConfig = C.rcvdict["configuration"]
 
                 # Call func Initialize game
-                if(not C.pause):
-                    C.game = server_config(GameConfig=GameConfig,GuiObject=GUI)
-                else:
-                    C.game = C.game
+                C.game = server_config(GameConfig,GuiObject=GUI)
                 
                 GameState = GameConfig["initialState"]
                 C.color = C.rcvdict["color"]
@@ -151,11 +144,9 @@ async def ProcessEvent(C, websocket,GUI):
             C.snddict["type"] = "MOVE"
             C.snddict["move"] = dict()
             # This means eno kan el dor 3alaya w da awel move fel game aw eno galy oponent move aw kunt ba3ta invlaid move
-            if (C.rcvdict["type"] == "START" or C.rcvdict["type"] == "MOVE"):
+            if (C.rcvdict["type"] == "START" or C.rcvdict["type"] == "INVALID" or C.rcvdict["type"] == "MOVE"):
                 # call func generate move
-                C.move = C.game.getMove(invalid = False)
-            if (C.rcvdict["type"] == "INVALID"):
-                C.move = C.game.getMove(invalid = True)
+                C.move = C.game.getMove()
 
             if (C.move == 0):
                 m = {"type": "resign"}
