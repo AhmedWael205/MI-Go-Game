@@ -173,29 +173,18 @@ class Game:
         if previousMove is None:
             previousMove = self.previousMove
         if not Random:
-            """
-                PreviousMove in normal mode I only need to know whether its pass or not
-                (-1,-1) is pass
-                (-2,-2) if i start the game
-    
-                if I recieve (-1,-1) I need to pass
-
-            """
-            print("Turn: ",turn,"previousMove: ", previousMove)
-            # input("Here")
             if not invalid:
                 move = self.Agent.getMove(stones,turn,(previousMove[0],previousMove[1]))[0]
                 if move[0] ==-1 and move[1] == -1:
                     move = 1
             else:
                 x = GameManager(self.game)
-                validMoves = x.GetPossibleMoves(turn)
+                validMoves = x.GetPossibleMoves(1-turn)[0]
                 y = random.randint(0, len(validMoves))
-                if validMoves[y] == 361:
+                if int(validMoves[y]) == 361:
                     move = 1
                 else:
-                    move = [validMoves[y] // 19, validMoves[y]%19]
-                    print("Generate Any valid Random: ",move)
+                    move = [int(validMoves[y]) // 19, int(validMoves[y])%19]
             return move
 
 

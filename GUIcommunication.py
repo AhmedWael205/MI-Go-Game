@@ -111,7 +111,7 @@ class GuiComm:
                 self.send_gui_packet()
                 receivedPacket = self.receive_gui()
         else:
-            for i in range(50):
+            for i in range(25):
                 self.send_gui_packet()
                 receivedPacket = self.receive_gui()
         self.lastPacket = receivedPacket

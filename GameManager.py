@@ -104,7 +104,7 @@ class GameManager:
         buffer = []
         for i in range(19):
             for j in range(19):
-                dummy = copy.deepcopy(self.game.getBoard())
+                dummy = copy.deepcopy(self.game)
                 buffer.append(dummy.AddStone((i, j), int(actor == 1)))
 
         truthOfMoves[:-1] = np.asarray(buffer)
