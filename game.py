@@ -5,6 +5,7 @@ import random
 
 class Game:
     comm = None
+    LastPass = 0;
 
     def __init__(self, wloc=[], bloc=[], bCapturedStones=0, wCapturedStones=0, mode=1, GuiObject=None):
 
@@ -41,9 +42,10 @@ class Game:
             if Move[3] == 1:  # MOVE[2] IS THE RESIGN
                 self.Resign = True
                 valid = True
-            elif Move[4] == 1:  # MOVE[3] IS THE PASS
+            elif Move[4] == self.LastPass + 1:  # MOVE[3] IS THE PASS
                 self.Pass[turn] = True
                 self.turn = turn
+                self.LastPass = self.LastPass + 1
                 valid = True
             else:
                 self.Pass[self.turn] = False
@@ -57,7 +59,6 @@ class Game:
                 valid = True
             elif Move == 1:
                 self.Pass[self.turn] = True
-                self.turn = int(Move[2])
                 valid = True
             else:
                 lastPlay = Move
@@ -75,8 +76,8 @@ class Game:
             if Debugging:
                 print("\n                           Board")
                 self.game.Drawboard()
-                print("\n                           Territory")
-                self.game.Drawboard(TerrBoard)
+                #print("\n                           Territory")
+                #self.game.Drawboard(TerrBoard)
                 print("Score [White,Black]:", score)
 
             capturedStones = self.game.CapturedStones
@@ -98,6 +99,7 @@ class Game:
                     dummy = self.comm.receive_gui()
                     self.comm.send_gui_packet(gameBoard, 'b', score, lastPlay, Time[1], Time[0], True, 0,
                                               capturedStones=capturedStones)
+                print("if self.Resign")
                 return valid, True
             if self.Pass[turn]:
                 # If any player chose pass, set last play to -3, -3
@@ -115,13 +117,21 @@ class Game:
                     dummy = self.comm.receive_gui()
                     self.comm.send_gui_packet(gameBoard, 'b', score, lastPlay, Time[1], Time[0], True, 0,
                                               capturedStones=capturedStones)
+                print("if False not in self.Pass")
                 return valid, True
 
             # Lastly, Sending packet to GUI in in case there's no winner
             self.turn = 1 - self.turn
-            dummy = self.comm.receive_gui()
+            if self.mode:
+                dummy = self.comm.receive_gui()
+            else:
+                dummy = self.comm.receive_gui_mode(mode=0)
+            # print(gameBoard)
+            # input("Before Sending ")
+            #print("Before Sending last Move: ",lastPlay)
             self.comm.send_gui_packet(gameBoard, 'n', score, lastPlay, timeBlack=Time[1], timeWhite=Time[0], moveValidation=valid,
                                       theBetterMove=0, betterMoveCoord=[0, 0], capturedStones=capturedStones)
+            # input("AFTER Sending ")
         return valid, False  # not Valid
 
     def getMove(self):
@@ -131,8 +141,8 @@ class Game:
         elif x == 362:
             return 0
         else:
-            row = random.randint(0, 19)
-            column = random.randint(0, 19)
+            row = random.randint(0, 18)
+            column = random.randint(0, 18)
             move = (row, column)
             return move
 

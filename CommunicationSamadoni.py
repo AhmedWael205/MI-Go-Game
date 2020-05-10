@@ -15,6 +15,7 @@ import logging
 import json
 import enum
 from ServerConfig import server_config
+from GUIcommunication import GuiComm
 
 
 
@@ -31,12 +32,12 @@ class Client:
     # Taken from command line for future purposes
     # name of the team
     name = "GG"
-    if (sys.argv[1] != None):
-        name = sys.argv[1]
+    # if (sys.argv[1] != None):
+    #     name = sys.argv[1]
         # url for WS
     url = "ws://localhost:8080"
-    if (sys.argv[2] != None):
-        url = sys.argv[2]
+    # if (sys.argv[2] != None):
+    #     url = sys.argv[2]
     disconnectdict = {"type": "DISCONNECTION"}
 
     def __init__(self):
@@ -50,7 +51,16 @@ class Client:
         self.time = None
 
 
-async def main():
+async def main2(GUIObject=None):
+    if GUIObject == None:
+        GUI = GuiComm()
+    else:
+        GUI = GUIObject
+    # receivedPacket = GUI.receive_gui_mode()
+    # GUI.send_gui_packet()
+    # mode = receivedPacket[0]
+    # if mode ==1:
+    #     return
     logger = logging.getLogger('websockets')
     logger.setLevel(logging.INFO)
     logger.addHandler(logging.StreamHandler())
@@ -70,18 +80,18 @@ async def main():
                     # Testing
                     print("RCV: ", C.rcvdict)
                     # Process with the Implementation what we received and receive a dictionary to send to server
-                    await ProcessEvent(C, websocket)
+                    await ProcessEvent(C, websocket,GUI)
                     # Testing
                     print("In Main: ", C.state.name)
                 except (websockets.exceptions.ConnectionClosedError, websockets.exceptions.ConnectionClosed) as e:
                     print(e)
                     C.rcvdict = C.disconnectdict
-                    await ProcessEvent(C, websocket)
+                    await ProcessEvent(C, websocket,GUI)
                     print("In Except: ", C.state.name)
                     break
 
 
-async def ProcessEvent(C, websocket):
+async def ProcessEvent(C, websocket,GUI):
     if (C.rcvdict["type"] == "END"):
         print("Game ended")
         print("Reason ", C.rcvdict["reason"])
@@ -110,7 +120,7 @@ async def ProcessEvent(C, websocket):
                 GameConfig = C.rcvdict["configuration"]
 
                 # Call func Initialize game
-                C.game = server_config(GameConfig)
+                C.game = server_config(GameConfig,GuiObject=GUI)
                 
                 GameState = GameConfig["initialState"]
                 C.color = C.rcvdict["color"]
@@ -121,7 +131,7 @@ async def ProcessEvent(C, websocket):
                     # Need to generate new move to send to server
                     C.time = [GameState["players"]["W"],GameState["players"]["B"]]
                     C.state = ClientState.THINKING
-                    await ProcessEvent(C, websocket)
+                    await ProcessEvent(C, websocket,GUI)
                 else:
                     # will wait for opponent move in that
                     C.state = ClientState.IDLE
@@ -163,13 +173,13 @@ async def ProcessEvent(C, websocket):
                     C.game.play(MoveTuple, Debugging=True, Time = C.time)
 
                 C.state = ClientState.THINKING
-                await ProcessEvent(C, websocket)
+                await ProcessEvent(C, websocket,GUI)
         elif (C.state == ClientState.AWAITING_MOVE_RESPONSE):
             if (C.rcvdict["type"] == "INVALID"):
                 print("Invalid Reason ", C.rcvdict["message"])
                 C.time = [C.rcvdict["remainingTime"]["W"], C.rcvdict["remainingTime"]["B"]]
                 C.state = ClientState.THINKING
-                await ProcessEvent(C, websocket)
+                await ProcessEvent(C, websocket,GUI)
             else:
                 C.time = [C.rcvdict["remainingTime"]["W"], C.rcvdict["remainingTime"]["B"]]
                 # SEND to agent that they should save last move
@@ -187,7 +197,10 @@ async def ProcessEvent(C, websocket):
                 C.state = ClientState.IDLE
         return
 
+if __name__ == "__main__":
+   # stuff only to run when not called via 'import' here
+    main2()
 
-loop = asyncio.get_event_loop()
-asyncio.ensure_future(main())
-loop.run_forever()
+# loop = asyncio.get_event_loop()
+# asyncio.ensure_future(main2())
+# loop.run_forever()

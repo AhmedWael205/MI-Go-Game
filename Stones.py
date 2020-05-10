@@ -182,9 +182,13 @@ class stones:
             return True
         location = (int(glocation[0]),int(glocation[1]))
         if location[0] < 0 or location[1] < 0 or location[0] > 18 or location[1] > 18 or self._board[location[0]][location[1]] != Position.empty:
-            print("Invalid Location")
+            # print("Invalid Location: ",location,"Current value: ",self._board[location[0]][location[1]],"Turn: ",turn )
+            # self.Drawboard()
+            # input("Here .. Invalid: ")
             return False
 
+        # print("valid Location: ", location, "Current value: ", self._board[location[0]][location[1]], "Turn: ", turn,"Test Suicide: ",test)
+        # input("Here .. Valid: ")
         if turn == 1:
             color = Position.black
         else:

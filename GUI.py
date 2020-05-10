@@ -2,13 +2,16 @@
 # from Stones import Turn
 # import zmq
 # import numpy as np
-import copy
-import os
+# import os
+# from ServerConfig import server_config
 
-from ServerConfig import server_config
+import asyncio
+import copy
 from game import Game
 from GUIcommunication import GuiComm
 import datetime
+from CommunicationSamadoni import main2
+
 
 def go():
 
@@ -16,6 +19,7 @@ def go():
     receivedPacket = GUI.receive_gui_mode()
     GUI.send_gui_packet()
     mode = receivedPacket[0]
+    Human = receivedPacket[5]
 
     if mode == 1:  # AI vs Human
         Time = [900000, 900000]
@@ -28,8 +32,6 @@ def go():
             game = Game(GuiObject=GUI, mode=0)
          """
         # Receiving Human Color
-        Human = 1
-        # @ Todo CALL RECEIVE A HUMAN COLOUR
 
         # receivedPacket = GUI.receive_gui_mode()
         # GUI.send_gui_packet()
@@ -88,23 +90,27 @@ def go():
 
             AI_score = tempGame.getScoreAndTerrBoard()[0]
 
-            LastPlay = AI_move
 
             score = game.game.getScoreAndTerrBoard()[0]
             if turn == Human:
-                print("Human Score Diff :", score[Human] - score[1 - Human])
-                print("AI Score Diff :", AI_score[Human] - AI_score[1 - Human])
+                if AI_move == 0 or AI_move == 1:
+                    AI_move = [-1,-1]
+
+                # print("Human Score Diff :", score[Human] - score[1 - Human])
+                # print("AI Score Diff :", AI_score[Human] - AI_score[1 - Human])
                 if score[Human] - score[1 - Human] >= AI_score[Human] - AI_score[1 - Human]:
-                    print("Here1")
                     dummy = GUI.receive_gui()
                     GUI.send_gui_packet(theBetterMove=1, betterMoveCoord=AI_move)
                 else:
-                    print("Here2")
                     dummy = GUI.receive_gui()
                     GUI.send_gui_packet(theBetterMove=-1, betterMoveCoord=AI_move)
             turn = 1 - turn  # White turn = 0 , Black Turn = 0
+
     else:
-        os.system('python CommunicationSamadoni.py BS ws://127.0.0.1:8080')
+        # os.system('python CommunicationSamadoni.py BS ws://127.0.0.1:8080')
+        loop = asyncio.get_event_loop()
+        asyncio.ensure_future(main2(GUI))
+        loop.run_forever()
 
     return True
 

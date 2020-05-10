@@ -24,7 +24,7 @@ class GuiComm:
     #   def send_gui_packet(self, board, terr, winLoss, scoreArr, lastPlay, mode, time, moveValidation):
 
     def send_gui_packet(self, board=np.zeros((19, 19), dtype=int), winLoss='n', scoreArr=[0, 0], lastPlay=[-1, -1],
-                        timeBlack=0, timeWhite=0, moveValidation=1,
+                        timeBlack=-1, timeWhite=-1, moveValidation=1,
                         theBetterMove=0, betterMoveCoord=[-1, -1], capturedStones=None):
         # FLATTENING THE numpy 2D ARRAY
         # print("LAST PLAYABLES \n", lastPlay)
@@ -97,12 +97,18 @@ class GuiComm:
         # PACKET  [MODE, X, Y, RESIGN , PASS, HUMAN COLOR] --> MODE = 1: AI VS AI , -1--> HUMAN
         return int(packet[0]), int(packet[1]), int(packet[2]), int(packet[3]), int(packet[4]), int(packet[5])
 
-    def receive_gui_mode(self):
+    def receive_gui_mode(self,mode=1):
+
         receivedPacket = self.receive_gui()
         print(receivedPacket)
         print(self.lastPacket)
-        while receivedPacket == self.lastPacket:
-            self.send_gui_packet()
-            receivedPacket = self.receive_gui()
+        if mode == 1:
+            while receivedPacket == self.lastPacket:
+                self.send_gui_packet()
+                receivedPacket = self.receive_gui()
+        else:
+            for i in range(50):
+                self.send_gui_packet()
+                receivedPacket = self.receive_gui()
         self.lastPacket = receivedPacket
         return receivedPacket
