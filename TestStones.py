@@ -29,7 +29,7 @@ def go():
         else:
             print("Wrong Input")
             continue
-        LastPlay = (x, y,turn) # White turn = 0 , Black Turn = 0
+        # LastPlay = (x, y,turn) # White turn = 0 , Black Turn = 0
         turn = 1 - turn
         score, TerrBoard = Board.getScoreAndTerrBoard()
         Board.Drawboard()

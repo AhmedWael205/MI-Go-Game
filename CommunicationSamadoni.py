@@ -51,6 +51,8 @@ class Client:
         self.time = None
 
 
+
+
 async def main2(GUIObject=None):
     if GUIObject == None:
         GUI = GuiComm()
@@ -152,7 +154,10 @@ async def ProcessEvent(C, websocket,GUI):
             elif (C.move == 1):
                 m = {"type": "pass"}
             else:
-                m = {"type": "place", "point": {"row": C.move[0], "column": C.move[1]}}
+                m = {"type": "place", "point": {"row": int(C.move[0]), "column": int(C.move[1])}}
+
+            print("C.snddict[move]: ", m)
+            print("C.snddict: ", C.snddict)
 
             C.snddict["move"] = m
             JSND = json.dumps(C.snddict)

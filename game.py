@@ -1,7 +1,9 @@
+import copy
+
 from Stones import stones
 from GUIcommunication import GuiComm
 import random
-
+from FeatureExtractor.AI import AIplayer
 
 class Game:
     comm = None
@@ -28,6 +30,11 @@ class Game:
             # Mode is TRUE packet indicating HUMAN VS AI, Disregard the rest of the packet
             self.mode = True
             pass
+        #MCTS = False
+        #mctSims= 1000
+        #self.Agent = AIplayer("LargeNoKoModel18.h5",MCTS,mctSims)
+        self.Agent = AIplayer("D:/University Materials/CMPN courses/Machine intelligence/Spring 2020/Project/Our Project/FeatureExtractor/LargeNoKoModel18.h5")
+        self.previousMove = [-2,-2]
 
     def setOurTurn(self,OurTurn):
         self.OurTurn = OurTurn
@@ -39,7 +46,7 @@ class Game:
 
         # Last Play and Valid initialized outside the ifs scope
         valid = False
-        lastPlay = []
+        lastPlay = [-3,-3]
         if self.mode and mode is None:
             # IF SELF MODE == TRUE, HUMAN VS AI MOVE PARAMETER IS DIFFERENT
 
@@ -62,10 +69,14 @@ class Game:
                 self.Resign = True
                 valid = True
             elif Move == 1:
+                if self.turn != self.OurTurn:
+                    self.previousMove = [-1,-1]
                 self.Pass[self.turn] = True
                 valid = True
             else:
                 lastPlay = Move
+                if self.turn == 1-self.OurTurn:
+                    self.previousMove = [int(Move[0]), int(Move[1])]
                 if turn == -1:
                     valid = self.game.AddStone((int(Move[0]), int(Move[1])), int(Move[2]))
                     self.turn = int(Move[2])
@@ -137,7 +148,6 @@ class Game:
                 return valid, True
 
             # Lastly, Sending packet to GUI in in case there's no winner
-            self.turn = 1 - self.turn
             if self.mode:
                 dummy = self.comm.receive_gui()
             else:
@@ -149,17 +159,47 @@ class Game:
             self.comm.send_gui_packet(gameBoard, 'n', score, lastPlay, timeBlack=Time[1], timeWhite=Time[0], moveValidation=valid,
                                       theBetterMove=0, betterMoveCoord=[0, 0], capturedStones=capturedStones)
             # input("AFTER Sending ")
+        self.turn = 1 - self.turn
         return valid, False  # not Valid
 
-    def getMove(self):
-        x = random.randint(0, 361)
-        if x == 361:
-            return 1
-        else:
-            row = random.randint(0, 18)
-            column = random.randint(0, 18)
-            move = (row, column)
+    def getMove(self,stones=None,turn=None,previousMove=None,Random=False):
+        if stones is None:
+            stones = self.game
+        if turn is None:
+            turn = self.OurTurn
+        if previousMove is None:
+            previousMove = self.previousMove
+        if not Random:
+            """
+                PreviousMove in normal mode I only need to know whether its pass or not
+                (-1,-1) is pass
+                (-2,-2) if i start the game
+    
+                if I recieve (-1,-1) I need to pass
+
+            """
+            print("Turn: ",turn,"previousMove: ", previousMove)
+            # input("Here")
+            move = self.Agent.getMove(stones,turn,(previousMove[0],previousMove[1]))[0]
+            if move[0] ==-1 and move[1] == -1:
+                move = 1
+            tempGame = copy.deepcopy(self.game)
+            valid = tempGame.AddStone(move, turn)
+            if not valid:
+                #TODO Handle
+                pass
             return move
+
+        else:
+            x = random.randint(0, 361)
+            if x == 361:
+                return 1
+            else:
+                row = random.randint(0, 18)
+                column = random.randint(0, 18)
+                move = (row, column)
+                return move
+
 
     def Drawboard(self):
         self.game.Drawboard()

@@ -20,6 +20,9 @@ def go():
     GUI.send_gui_packet()
     mode = receivedPacket[0]
     Human = receivedPacket[5]
+    PreviousHumanMove = [-2,-2]
+    PreviousAIMove = [-2, -2]
+    SuggestedAIMove = [-1,-1]
 
     if mode == 1:  # AI vs Human
         Time = [900000, 900000]
@@ -65,46 +68,52 @@ def go():
                     c = b - a
                     Time[turn] = Time[turn] - int(c.total_seconds() * 1000)
                     valid, game_end = game.play(receivedPacket, turn,Time=Time)
-                LastPlay = receivedPacket[1:3]
-            a = datetime.datetime.now()
-            AI_move = game.getMove()
-            b = datetime.datetime.now()
-            c = b - a
-            tempGame = copy.deepcopy(game.game)
-            valid = tempGame.AddStone(AI_move, turn)
-            while not valid:
-                a = datetime.datetime.now()
-                AI_move = game.getMove()
-                b = datetime.datetime.now()
-                c = c + (b - a)
+                PreviousHumanMove = receivedPacket[1:3]
+                # a = datetime.datetime.now()
+                AI_move = game.getMove(turn=Human,previousMove=PreviousAIMove)
+                # b = datetime.datetime.now()
+                # c = b - a
+                tempGame = copy.deepcopy(game.game)
                 valid = tempGame.AddStone(AI_move, turn)
-            if turn != Human:
-                Time[turn] = Time[turn] - int(c.total_seconds() * 1000)
-                valid, game_end = game.play(AI_move, turn, mode=True,Time=Time)
                 while not valid:
-                    a = datetime.datetime.now()
-                    AI_move = game.getMove()
-                    b = datetime.datetime.now()
-                    c = b - a
-                    Time[turn] = Time[turn] - int(c.total_seconds() * 1000)
-                    valid, game_end = game.play(AI_move, turn, mode=True,Time=Time)
+                    # a = datetime.datetime.now()
+                    AI_move = game.getMove(turn=Human,previousMove=PreviousAIMove)
+                    # b = datetime.datetime.now()
+                    # c = c + (b - a)
+                    valid = tempGame.AddStone(AI_move, turn)
+                SuggestedAIMove = AI_move
+                AI_score = tempGame.getScoreAndTerrBoard()[0]
 
-            AI_score = tempGame.getScoreAndTerrBoard()[0]
-
-
-            score = game.game.getScoreAndTerrBoard()[0]
-            if turn == Human:
-                if AI_move == 0 or AI_move == 1:
-                    AI_move = [-1,-1]
+                score = game.game.getScoreAndTerrBoard()[0]
+                if SuggestedAIMove == 0 or SuggestedAIMove == 1:
+                    SuggestedAIMove = [-1, -1]
 
                 # print("Human Score Diff :", score[Human] - score[1 - Human])
                 # print("AI Score Diff :", AI_score[Human] - AI_score[1 - Human])
                 if score[Human] - score[1 - Human] >= AI_score[Human] - AI_score[1 - Human]:
                     dummy = GUI.receive_gui()
-                    GUI.send_gui_packet(theBetterMove=1, betterMoveCoord=AI_move)
+                    GUI.send_gui_packet(theBetterMove=1, betterMoveCoord=SuggestedAIMove)
                 else:
                     dummy = GUI.receive_gui()
-                    GUI.send_gui_packet(theBetterMove=-1, betterMoveCoord=AI_move)
+                    GUI.send_gui_packet(theBetterMove=-1, betterMoveCoord=SuggestedAIMove)
+
+            else:
+                a = datetime.datetime.now()
+                AI_move = game.getMove(turn=1-Human, previousMove=PreviousHumanMove)
+                b = datetime.datetime.now()
+                c = (b - a)
+                Time[turn] = Time[turn] - int(c.total_seconds() * 1000)
+                valid, game_end = game.play(AI_move, turn, mode=True, Time=Time)
+                while not valid:
+                    a = datetime.datetime.now()
+                    AI_move = game.getMove(turn=1-Human, previousMove=PreviousHumanMove)
+                    b = datetime.datetime.now()
+                    c = b - a
+                    Time[turn] = Time[turn] - int(c.total_seconds() * 1000)
+                    valid, game_end = game.play(AI_move, turn, mode=True,Time=Time)
+                PreviousAIMove = AI_move
+
+
             turn = 1 - turn  # White turn = 0 , Black Turn = 0
 
     else:

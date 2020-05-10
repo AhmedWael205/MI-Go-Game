@@ -178,7 +178,14 @@ class stones:
         :param test: Whether we are testing to add or we are actually adding it
         :return: true if valid, false if not
         """
+        if turn ==0:
+            print("White Turn")
+        else:
+            print("Black Turn")
+
         if glocation == 0 or glocation == 1:
+            self._PreviousBoardStates[turn].append(np.copy(self._board))
+            self.stoneAge = np.where(self._board, self.stoneAge + 1, 0)
             return True
         location = (int(glocation[0]),int(glocation[1]))
         if location[0] < 0 or location[1] < 0 or location[0] > 18 or location[1] > 18 or self._board[location[0]][location[1]] != Position.empty:
@@ -220,9 +227,11 @@ class stones:
 
         if eat:
             print("Eat Group")
+
         self._PreviousBoardStates[turn].append(np.copy(self._board))
         self.stoneAge = np.where(self._board, self.stoneAge + 1, 0)
         self.stoneAge[location[0]][location[1]] = 1
+
         return True
 
     ########################################################################################################################
