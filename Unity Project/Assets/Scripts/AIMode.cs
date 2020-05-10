@@ -342,7 +342,7 @@ public class AIMode : MonoBehaviour
                 StoneSprite = StoneSprites[0];
                 string StoneName = StoneSprite.name;
                 // Debug.Log("Inside  Drawing n :" + n);
-                GameObject CapturedStone = Instantiate(StonePrefab, new Vector2(XCapturePositionWhite[LastCapturedIndexWhite + n], YCapturePositionWhite[LastCapturedIndexWhite + n]), Quaternion.identity);
+                GameObject CapturedStone = Instantiate(StonePrefab, new Vector2(XCapturePositionBlack[LastCapturedIndexWhite + n], YCapturePositionBlack[LastCapturedIndexWhite + n]), Quaternion.identity);
                 CapturedStone.GetComponent<Stone>().StoneName = StoneName;
                 CapturedStone.GetComponent<SpriteRenderer>().sprite = StoneSprite;
 
@@ -365,7 +365,7 @@ public class AIMode : MonoBehaviour
                 StoneSprite = StoneSprites[1];
                 string StoneName = StoneSprite.name;
                 //  Debug.Log("Inside  Drawing n :" + n);
-                GameObject CapturedStone = Instantiate(StonePrefab, new Vector2(XCapturePositionBlack[LastCapturedIndexBlack + n], YCapturePositionBlack[LastCapturedIndexBlack + n]), Quaternion.identity);
+                GameObject CapturedStone = Instantiate(StonePrefab, new Vector2(XCapturePositionWhite[LastCapturedIndexBlack + n], YCapturePositionWhite[LastCapturedIndexBlack + n]), Quaternion.identity);
                 CapturedStone.GetComponent<Stone>().StoneName = StoneName;
                 CapturedStone.GetComponent<SpriteRenderer>().sprite = StoneSprite;
 
