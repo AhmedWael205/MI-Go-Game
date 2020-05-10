@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>AsyncIO</id>
+    <version>0.1.69</version>
+    <title>AsyncIO</title>
+    <authors>AsyncIO</authors>
+    <owners>AsyncIO</owners>
+    <projectUrl>https://github.com/somdoron/AsyncIO</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Package Description</description>
+    <summary />
+    <dependencies>
+      <group targetFramework=".NETFramework4.0" />
+      <group targetFramework="Unsupported0.0">
+        <dependency id="NETStandard.Library" version="1.6.0" />
+        <dependency id="System.Net.NameResolution" version="4.0.0" />
+      </group>
+    </dependencies>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="Microsoft.CSharp" targetFramework=".NETFramework4.0" />
+      <frameworkAssembly assemblyName="System" targetFramework=".NETFramework4.0" />
+    </frameworkAssemblies>
+  </metadata>
+</package>
