@@ -33,8 +33,8 @@ class Game:
             pass
         #MCTS = False
         #mctSims= 1000
-        #self.Agent = AIplayer("LargeNoKoModel18.h5",MCTS,mctSims)
-        self.Agent = AIplayer("D:/University Materials/CMPN courses/Machine intelligence/Spring 2020/Project/Our Project/FeatureExtractor/LargeNoKoModel18.h5")
+        #self.Agent = AIplayer("FeatureExtractor/LargeNoKoModel18.h5",MCTS,mctSims)
+        self.Agent = AIplayer("FeatureExtractor/LargeNoKoModel18.h5")
         self.previousMove = [-2,-2]
 
     def setOurTurn(self,OurTurn):

@@ -5,8 +5,6 @@
 # Need to figure out how to do it on device
 import sys
 
-sys.path.append(
-    "/Users/ayahs/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.8_qbz5n2kfra8p0/LocalCache/local-packages/Python38/site-packages")
 
 # needed imports for communication protocol
 import asyncio
