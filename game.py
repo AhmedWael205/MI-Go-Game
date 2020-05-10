@@ -4,6 +4,7 @@ from Stones import stones
 from GUIcommunication import GuiComm
 import random
 from FeatureExtractor.AI import AIplayer
+from GameManager import GameManager
 
 class Game:
     comm = None
@@ -162,7 +163,7 @@ class Game:
         self.turn = 1 - self.turn
         return valid, False  # not Valid
 
-    def getMove(self,stones=None,turn=None,previousMove=None,Random=False):
+    def getMove(self,stones=None,turn=None,previousMove=None,Random=False,invalid=False):
         if stones is None:
             stones = self.game
         if turn is None:
@@ -180,15 +181,20 @@ class Game:
             """
             print("Turn: ",turn,"previousMove: ", previousMove)
             # input("Here")
-            move = self.Agent.getMove(stones,turn,(previousMove[0],previousMove[1]))[0]
-            if move[0] ==-1 and move[1] == -1:
-                move = 1
-            tempGame = copy.deepcopy(self.game)
-            valid = tempGame.AddStone(move, turn)
-            if not valid:
-                #TODO Handle
-                pass
+            if not invalid:
+                move = self.Agent.getMove(stones,turn,(previousMove[0],previousMove[1]))[0]
+                if move[0] ==-1 and move[1] == -1:
+                    move = 1
+            else:
+                x = GameManager(self.game)
+                validMoves = x.GetPossibleMoves(turn)
+                y = random.randint(0, len(validMoves))
+                if validMoves[y] == 361:
+                    move = 1
+                else:
+                    move = [validMoves[y] // 19, validMoves[y]%19]
             return move
+
 
         else:
             x = random.randint(0, 361)
