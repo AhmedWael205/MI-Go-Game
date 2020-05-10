@@ -6,7 +6,7 @@ import asyncio
 
 def server_config(GameConfig,FileName=None,mode=1,GuiObject=None):
     if(FileName is None):
-        GameConfig = GameCofig
+        GameConfig = GameConfig
     else:
         with open(FileName, 'r') as f:
             GameConfig = json.load(f)
