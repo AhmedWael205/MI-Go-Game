@@ -151,7 +151,7 @@ async def ProcessEvent(C, websocket,GUI):
                 # call func generate move
                 C.move = C.game.getMove(invalid = False)
             elif (C.rcvdict["type"] == "INVALID"):
-                C.move = C.game.getMove(invalid = True)
+                C.move = C.game.getMove(invalid = False)
 
             if (C.move == 0):
                 m = {"type": "resign"}
