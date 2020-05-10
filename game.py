@@ -152,11 +152,9 @@ class Game:
         return valid, False  # not Valid
 
     def getMove(self):
-        x = random.randint(0, 362)
+        x = random.randint(0, 361)
         if x == 361:
             return 1
-        elif x == 362:
-            return 0
         else:
             row = random.randint(0, 18)
             column = random.randint(0, 18)

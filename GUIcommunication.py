@@ -59,8 +59,8 @@ class GuiComm:
         else:
             betterMoveCoord = self.betterMoveCoordLast
 
-        scoreArr[0] = int(scoreArr[0])
-        scoreArr[1] = int(scoreArr[1])
+        # scoreArr[0] = int(scoreArr[0])
+        # scoreArr[1] = int(scoreArr[1])
         if np.array_equal(board, np.zeros((19, 19), dtype=int)):
             board = self.lastBoard
         else:
