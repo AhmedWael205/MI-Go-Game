@@ -3,7 +3,7 @@
 # import zmq
 # import numpy as np
 # import os
-# from ServerConfig import server_config
+from ServerConfig import server_config
 
 import asyncio
 import copy
@@ -26,21 +26,14 @@ def go():
 
     if mode == 1:  # AI vs Human
         Time = [900000, 900000]
-        """
-        if int(initial_locations):
+
+        initial_locations = input("Is there an initial move log Json file: (1 = yes, 0 = no)? ")
+        if int(initial_locations) == 1:
             file_name = input("Enter the JSON file name: ")
-            game = server_config(file_name,mode=0,GuiObject=GUI)
+            game = server_config(None,FileName=file_name,GuiObject=GUI)
         else:
-            # MODE = 0 MEANING HUMAN VS AI
             game = Game(GuiObject=GUI, mode=0)
-         """
-        # Receiving Human Color
 
-        # receivedPacket = GUI.receive_gui_mode()
-        # GUI.send_gui_packet()
-        # print("Human color = ", Human)
-
-        game = Game(GuiObject=GUI, mode=0)
         game.setOurTurn(Human)
         game_end = False
         turn = game.turn
@@ -121,11 +114,11 @@ def go():
         name = None
         url = None
 
-        x = input("Would you like to enter client name: (1 = yes, 0 = no) ?")
+        x = input("Would you like to enter client name: (1 = yes, 0 = no) (default = GG)? ")
         if int(x) == 1:
             name = input("Please enter the client name: ")
 
-        y = input("Would you like to enter client url: (1 = yes, 0 = no) ?")
+        y = input("Would you like to enter client url: (1 = yes, 0 = no) (default = ws://localhost:8080)? ")
         if int(y) == 1:
             url = input("Please enter the client url: ")
 
