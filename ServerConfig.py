@@ -56,7 +56,7 @@ def server_config(GameConfig,FileName=None,mode=1,GuiObject=None):
                 backEndGame.Drawboard()
                 # input('Press any key ...')
         elif (move["move"]["type"] == "pass"):
-            pass
+            backEndGame.play(1, turn)
         elif (move["move"]["type"] == "resign"):
             # TODO handle resign at game config(illogical)
             print("Error in parsing JSON FILE AT GAME INIT CONFIG")
