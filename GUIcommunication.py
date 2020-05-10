@@ -100,8 +100,8 @@ class GuiComm:
     def receive_gui_mode(self,mode=1):
 
         receivedPacket = self.receive_gui()
-        print(receivedPacket)
-        print(self.lastPacket)
+        # print(receivedPacket)
+        # print(self.lastPacket)
         if mode == 1:
             while receivedPacket == self.lastPacket:
                 self.send_gui_packet()

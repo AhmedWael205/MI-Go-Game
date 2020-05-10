@@ -6,6 +6,7 @@ import random
 class Game:
     comm = None
     LastPass = 0;
+    OurTurn = 1; # default we are Black
 
     def __init__(self, wloc=[], bloc=[], bCapturedStones=0, wCapturedStones=0, mode=1, GuiObject=None):
 
@@ -27,6 +28,9 @@ class Game:
             # Mode is TRUE packet indicating HUMAN VS AI, Disregard the rest of the packet
             self.mode = True
             pass
+
+    def setOurTurn(self,OurTurn):
+        self.OurTurn = OurTurn
 
     def play(self, Move, turn=-1, Debugging=False, mode=None, Time=None):
         if Time is None:
@@ -87,37 +91,49 @@ class Game:
                 # Sending Last PLay as -2,-2 if any player resigns
                 lastPlay = [-2, -2]
 
-                if self.turn == 1:
-                    winner = "White"
+                if self.turn == self.OurTurn:
                     # SENDING PACKET TO GUI
-                    dummy = self.comm.receive_gui()
-                    self.comm.send_gui_packet(gameBoard, 'w', score, lastPlay, Time[1], Time[0], True, 0,
-                                              capturedStones=capturedStones)
+                    if self.mode:
+                        dummy = self.comm.receive_gui()
+                    else:
+                        dummy = self.comm.receive_gui_mode(mode=0)
+                    print("We lose")
+                    self.comm.send_gui_packet(gameBoard, 'l', score, lastPlay, Time[1], Time[0], True, 0,
+                                                  capturedStones=capturedStones)
                 else:
-                    winner = "Black"
                     # SENDING PACKET TO GUI
-                    dummy = self.comm.receive_gui()
-                    self.comm.send_gui_packet(gameBoard, 'b', score, lastPlay, Time[1], Time[0], True, 0,
-                                              capturedStones=capturedStones)
-                print("if self.Resign")
+                    if self.mode:
+                        dummy = self.comm.receive_gui()
+                    else:
+                        dummy = self.comm.receive_gui_mode(mode=0)
+                    print("We won")
+                    self.comm.send_gui_packet(gameBoard, 'w', score, lastPlay, Time[1], Time[0], True, 0,
+                                                  capturedStones=capturedStones)
+                print("Game End Reason: Resign")
                 return valid, True
             if self.Pass[turn]:
                 # If any player chose pass, set last play to -3, -3
                 lastPlay = [-3, -3]
             if False not in self.Pass:
-                if score[0] > score[1]:
-                    winner = "White"
+                if score[self.OurTurn] > score[1 - self.OurTurn]:
                     # SENDING PACKET TO GUI
-                    dummy = self.comm.receive_gui()
+                    if self.mode:
+                        dummy = self.comm.receive_gui()
+                    else:
+                        dummy = self.comm.receive_gui_mode(mode=0)
+                    print("We won")
                     self.comm.send_gui_packet(gameBoard, 'w', score, lastPlay, Time[1], Time[0], True, 0,
-                                              capturedStones=capturedStones)
+                                                  capturedStones=capturedStones)
                 else:
-                    winner = "Black"
                     # SENDING PACKET TO GUI
-                    dummy = self.comm.receive_gui()
-                    self.comm.send_gui_packet(gameBoard, 'b', score, lastPlay, Time[1], Time[0], True, 0,
-                                              capturedStones=capturedStones)
-                print("if False not in self.Pass")
+                    if self.mode:
+                        dummy = self.comm.receive_gui()
+                    else:
+                        dummy = self.comm.receive_gui_mode(mode=0)
+                    print("We lose")
+                    self.comm.send_gui_packet(gameBoard, 'l', score, lastPlay, Time[1], Time[0], True, 0,
+                                                  capturedStones=capturedStones)
+                print("Game End Reason: Pass")
                 return valid, True
 
             # Lastly, Sending packet to GUI in in case there's no winner
@@ -129,6 +145,7 @@ class Game:
             # print(gameBoard)
             # input("Before Sending ")
             #print("Before Sending last Move: ",lastPlay)
+            #print("Remaining Time in seconds: ",Time[0]/1000,Time[1]/1000)
             self.comm.send_gui_packet(gameBoard, 'n', score, lastPlay, timeBlack=Time[1], timeWhite=Time[0], moveValidation=valid,
                                       theBetterMove=0, betterMoveCoord=[0, 0], capturedStones=capturedStones)
             # input("AFTER Sending ")

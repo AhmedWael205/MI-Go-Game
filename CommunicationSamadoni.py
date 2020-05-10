@@ -124,6 +124,10 @@ async def ProcessEvent(C, websocket,GUI):
                 
                 GameState = GameConfig["initialState"]
                 C.color = C.rcvdict["color"]
+                if C.color == "B":
+                    C.game.setOurTurn(1)
+                else:
+                    C.game.setOurTurn(0)
 
                 # if true that means that it's our turn
                 if (((C.color == GameState["turn"]) and (len(GameConfig["moveLog"]) % 2 == 0)) or (

@@ -38,6 +38,7 @@ def go():
         # print("Human color = ", Human)
 
         game = Game(GuiObject=GUI, mode=0)
+        game.setOurTurn(Human)
         game_end = False
         turn = game.turn
         while not game_end:
